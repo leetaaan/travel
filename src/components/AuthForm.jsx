@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { toast } from 'react-hot-toast';
 
 const AuthForm = () => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -14,10 +15,10 @@ const AuthForm = () => {
     try {
       if (isRegistering) {
         await createUserWithEmailAndPassword(auth, email, password);
-        alert('Đăng ký thành công!');
+        toast.success('Đăng ký thành công!');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        alert('Đăng nhập thành công!');
+        toast.success('Đăng nhập thành công!');
       }
     } catch (err) {
       setError(err.message);
