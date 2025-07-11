@@ -8,10 +8,10 @@ import HomePage from './pages/HomePage';
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/home" element={<HomePage />} />
       <Route path="/planning" element={<PlanningPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/home" element={<HomePage />} />
+      <Route path="/" element={<LandingPage />} />
     </Routes>
   );
 };

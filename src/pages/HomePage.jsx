@@ -1,33 +1,44 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
+import TopMenu from '../components/TopMenu';
+import Sidebar from '../components/Sidebar';
 import MapDashboard from '../components/MapDashboard';
+import SpendingManagement from '../components/SpendingManagement';
 
 const HomePage = () => {
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-teal-500 text-white p-4 shadow-md">
-        <nav className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Travel App</h1>
-          <ul className="flex space-x-4">
-            <li>
-              <Link to="/planning" className="hover:text-gray-200">Planning</Link>
-            </li>
-            <li>
-              <Link to="/group-management" className="hover:text-gray-200">Tạo nhóm quản lý chi tiêu</Link>
-            </li>
-            <li>
-              <Link to="/search" className="hover:text-gray-200">Tìm kiếm</Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
-      <main className="container mx-auto p-4">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-6">Welcome to your Travel Dashboard!</h2>
-        <p className="text-gray-600">
-          Here you can manage your travel plans, create expense groups, and search for new destinations.
-        </p>
-        <MapDashboard />
-      </main>
+    <div className="flex flex-col h-screen">
+      <TopMenu />
+      <div className="flex flex-1 overflow-hidden">
+        {user ? (
+          <Sidebar onSelectGroup={setSelectedGroup} tripId="trip123" userId={user.uid} />
+        ) : (
+          <div className="bg-gray-100 p-4 h-full w-64 flex flex-col">
+             <h2 className="text-xl font-bold text-teal-600 mb-4">Groups</h2>
+             <div className="flex-1 flex items-center justify-center">
+                <p className="text-center text-gray-500">Please log in to see your groups.</p>
+             </div>
+          </div>
+        )}
+        <main className="flex-1 p-4 overflow-y-auto">
+          {selectedGroup ? (
+            <SpendingManagement group={selectedGroup} currentUser={user} />
+          ) : (
+            <MapDashboard />
+          )}
+        </main>
+      </div>
     </div>
   );
 };

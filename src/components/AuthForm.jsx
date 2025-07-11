@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { generateRandomAvatar } from '../utils/avatarUtils';
 
 const AuthForm = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -16,7 +19,16 @@ const AuthForm = () => {
     setError(null);
     try {
       if (isRegistering) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const avatarUrl = generateRandomAvatar();
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: user.email,
+          fullName: fullName,
+          profile_img: avatarUrl,
+          createdAt: new Date(),
+        });
         toast.success('Đăng ký thành công!');
       } else {
         await signInWithEmailAndPassword(auth, email, password);
@@ -33,6 +45,22 @@ const AuthForm = () => {
         <h3 className="text-2xl font-bold text-center text-gray-800">{isRegistering ? 'Register' : 'Login'}</h3>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <div className="rounded-md shadow-sm -space-y-px">
+            {isRegistering && (
+              <div>
+                <label htmlFor="full-name" className="sr-only">Full Name</label>
+                <input
+                  id="full-name"
+                  name="fullName"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-teal-500 focus:border-teal-500 focus:z-10 sm:text-sm"
+                  placeholder="Họ và tên"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+            )}
             <div>
               <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
