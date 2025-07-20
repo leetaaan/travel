@@ -132,7 +132,7 @@ const LandingPage = () => {
                 </div>
                 </div>
         
-        </>
+        
     );
 };
 
