@@ -307,40 +307,52 @@ const TopMenu = () => {
   };
 
   return (
-    <div className="bg-white shadow-md p-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold text-teal-600">Travel Planner</h1>
-      <div className="flex-1 flex justify-center mx-4 relative">
+    <div className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100 p-4 flex justify-between items-center sticky top-0 z-50">
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-500 rounded-xl flex items-center justify-center">
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+        </div>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent">Travel Planner</h1>
+      </div>
+      <div className="flex-1 flex justify-center mx-6 relative">
         <div className="relative w-full max-w-md">
           <input
             type="text"
             placeholder="Tìm kiếm bạn bè..."
-            className="border border-gray-300 rounded-full py-2 pl-10 pr-10 w-full focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="border border-gray-200 rounded-full py-3 pl-12 pr-12 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors shadow-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
           </div>
           {searchTerm && (
             <button
               onClick={handleClearSearch}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center focus:outline-none hover:text-gray-600 transition-colors"
             >
-              <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
             </button>
           )}
         </div>
         {searchResults.length > 0 && searchTerm.trim() !== '' && (
-          <div className="absolute top-full mt-2 w-full max-w-md bg-white border border-gray-300 rounded-md shadow-lg z-10">
+          <div className="absolute top-full mt-2 w-full max-w-md bg-white border border-gray-200 rounded-xl shadow-xl z-10 backdrop-blur-md">
             {searchResults.map((result) => (
-              <div key={result.id} className="p-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <img src={result.profile_img} alt="Avatar" className="w-8 h-8 rounded-full" />
-                  <span>{result.fullName || result.email}</span>
+              <div key={result.id} className="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between border-b border-gray-100 last:border-b-0 first:rounded-t-xl last:rounded-b-xl">
+                <div className="flex items-center space-x-3">
+                  <img src={result.profile_img} alt="Avatar" className="w-10 h-10 rounded-full border-2 border-gray-200" />
+                  <span className="font-medium text-gray-700">{result.fullName || result.email}</span>
                 </div>
                 <button
                   onClick={() => sendFriendRequest(result.id, result.fullName || result.email, result.email)}
-                  className="bg-teal-500 text-white text-sm rounded-full px-3 py-1 hover:bg-teal-600"
+                  className="bg-gradient-to-r from-teal-500 to-blue-500 text-white text-sm rounded-full px-4 py-2 hover:from-teal-600 hover:to-blue-600 transition-all duration-200 font-medium"
                   disabled={friendsList.includes(result.id) || pendingRequests.some(req => req.receiverId === result.id)}
                 >
                   {friendsList.includes(result.id) ? 'Đã là bạn bè' : pendingRequests.some(req => req.receiverId === result.id) ? 'Đang chờ' : 'Kết bạn'}
@@ -353,41 +365,41 @@ const TopMenu = () => {
       <div className="flex items-center space-x-4">
         {user && userData ? (
           <>
-            <Link to="/planning" className="bg-teal-500 text-white rounded-full py-2 px-4 hover:bg-teal-600">
+            <Link to="/planning" className="bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-full py-2 px-6 hover:from-teal-600 hover:to-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105">
               Xây dựng lịch trình
             </Link>
             <div className="relative" ref={notificationRef}>
               <button
                 onClick={() => setNotificationOpen(!notificationOpen)}
-                className="relative p-2 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                className="relative p-3 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all duration-200"
               >
                 <span className="sr-only">View notifications</span>
                 <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.001 2.001 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0m6 0H9" />
                 </svg>
                 {notifications.length > 0 && (
-                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">{notifications.length}</span>
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full animate-pulse">{notifications.length}</span>
                 )}
               </button>
               {notificationOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-20">
-                  <div className="block px-4 py-2 text-xs text-gray-400">Thông báo</div>
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20 backdrop-blur-md">
+                  <div className="block px-4 py-3 text-sm font-semibold text-gray-600 border-b border-gray-100">Thông báo</div>
                   {notifications.length > 0 ? (
                     notifications.map(notification => (
-                      <div key={notification.id} className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <div key={notification.id} className="px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 border-b border-gray-50 last:border-b-0">
                         {notification.type === 'friendRequest' && (
-                          <div className="flex justify-between items-center">
-                            <span>Lời mời kết bạn từ <strong>{notification.senderName || notification.senderEmail}</strong></span>
-                            <div className="flex space-x-2">
+                          <div className="space-y-2">
+                            <p className="text-gray-800">Lời mời kết bạn từ <strong className="text-teal-600">{notification.senderName || notification.senderEmail}</strong></p>
+                            <div className="flex space-x-2 pt-2">
                               <button
                                 onClick={() => handleAcceptFriendRequest(notification)}
-                                className="bg-green-500 text-white text-xs rounded-full px-2 py-1 hover:bg-green-600"
+                                className="bg-green-500 text-white text-xs rounded-full px-3 py-1 hover:bg-green-600 transition-colors font-medium"
                               >
                                 Chấp nhận
                               </button>
                               <button
                                 onClick={() => handleRejectFriendRequest(notification)}
-                                className="bg-red-500 text-white text-xs rounded-full px-2 py-1 hover:bg-red-600"
+                                className="bg-red-500 text-white text-xs rounded-full px-3 py-1 hover:bg-red-600 transition-colors font-medium"
                               >
                                 Từ chối
                               </button>
@@ -395,18 +407,18 @@ const TopMenu = () => {
                           </div>
                         )}
                         {notification.type === 'groupInvitation' && (
-                          <div className="flex justify-between items-center">
-                            <span>Lời mời tham gia nhóm <strong>{notification.groupName}</strong> từ <strong>{notification.senderName || notification.senderEmail}</strong></span>
-                            <div className="flex space-x-2">
+                          <div className="space-y-2">
+                            <p className="text-gray-800">Lời mời tham gia nhóm <strong className="text-blue-600">{notification.groupName}</strong> từ <strong className="text-teal-600">{notification.senderName || notification.senderEmail}</strong></p>
+                            <div className="flex space-x-2 pt-2">
                               <button
                                 onClick={() => handleAcceptGroupInvitation(notification)}
-                                className="bg-green-500 text-white text-xs rounded-full px-2 py-1 hover:bg-green-600"
+                                className="bg-green-500 text-white text-xs rounded-full px-3 py-1 hover:bg-green-600 transition-colors font-medium"
                               >
                                 Chấp nhận
                               </button>
                               <button
                                 onClick={() => handleRejectGroupInvitation(notification)}
-                                className="bg-red-500 text-white text-xs rounded-full px-2 py-1 hover:bg-red-600"
+                                className="bg-red-500 text-white text-xs rounded-full px-3 py-1 hover:bg-red-600 transition-colors font-medium"
                               >
                                 Từ chối
                               </button>
@@ -416,7 +428,12 @@ const TopMenu = () => {
                       </div>
                     ))
                   ) : (
-                    <div className="px-4 py-2 text-sm text-gray-500">Không có thông báo mới.</div>
+                    <div className="px-4 py-8 text-center">
+                      <svg className="w-12 h-12 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.001 2.001 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0m6 0H9"></path>
+                      </svg>
+                      <p className="text-sm text-gray-500">Không có thông báo mới</p>
+                    </div>
                   )}
                 </div>
               )}
@@ -424,35 +441,49 @@ const TopMenu = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-2 focus:outline-none"
+                className="flex items-center space-x-3 focus:outline-none hover:bg-gray-50 rounded-full p-2 transition-colors"
               >
                 <img
                   src={userData.profile_img}
                   alt="Profile Avatar"
-                  className="w-10 h-10 rounded-full border-2 border-teal-500"
+                  className="w-10 h-10 rounded-full border-2 border-gradient-to-r from-teal-500 to-blue-500 shadow-md"
                 />
-                <span className="font-medium text-gray-700">{userData.fullName || userData.email}</span>
+                <div className="hidden md:block text-left">
+                  <p className="font-semibold text-gray-800 text-sm">{userData.fullName || userData.email}</p>
+                  <p className="text-xs text-gray-500">Xem hồ sơ</p>
+                </div>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-20 backdrop-blur-md">
                   <button
                     onClick={handleProfileClick}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
-                    Hồ sơ
+                    <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>Hồ sơ</span>
                   </button>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex items-center w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
                   >
-                    Đăng xuất
+                    <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Đăng xuất</span>
                   </button>
                 </div>
               )}
             </div>
           </>
         ) : (
-          <Link to="/login" className="text-gray-600 hover:text-teal-500">Đăng nhập</Link>
+          <Link to="/login" className="bg-gradient-to-r from-teal-500 to-blue-500 text-white px-6 py-2 rounded-full hover:from-teal-600 hover:to-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105">
+            Đăng nhập
+          </Link>
         )}
       </div>
     </div>

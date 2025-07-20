@@ -85,16 +85,24 @@ const PlanningPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-      <div className="w-full max-w-7xl mx-auto bg-white shadow-md rounded-lg p-8 mt-10">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Công cụ lập kế hoạch hành trình</h1> 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex flex-col items-center p-6">
+      <div className="w-full max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-2xl p-8 mt-10 border border-white/20">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Công cụ lập kế hoạch hành trình
+          </h1>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            Tạo lịch trình du lịch hoàn hảo với sự hỗ trợ của AI và tìm kiếm khách sạn phù hợp với ngân sách
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Nhập điểm đến"
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
           />
           <input
             type="text"
@@ -104,20 +112,20 @@ const PlanningPage = () => {
               setBudget(raw);
             }}
             placeholder="Tổng ngân sách phòng (ví dụ: 5.000.000 VNĐ)"
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
           />
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
             title="Ngày bắt đầu"
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
             title="Ngày kết thúc"
           />
           <input
@@ -126,14 +134,14 @@ const PlanningPage = () => {
             onChange={(e) => setAdults(e.target.value)}
             placeholder="Số người lớn"
             min={1}
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
           />
           <input
             type="text"
             value={childrenAge}
             onChange={(e) => setChildrenAge(e.target.value)}
             placeholder="Tuổi trẻ em (vd: 5,10)"
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
           />
           <input
             type="number"
@@ -141,38 +149,71 @@ const PlanningPage = () => {
             onChange={(e) => setRoomQty(e.target.value)}
             placeholder="Số phòng"
             min={1}
-            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-200"
           />
         </div>
 
         <button
           onClick={handleGenerateItinerary}
           disabled={loading}
-          className="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300"
+          className="w-full bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold py-4 px-8 rounded-xl hover:from-teal-600 hover:to-blue-600 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none flex items-center justify-center space-x-3"
         >
-          {loading ? 'Đang tạo...' : '✨ Tạo bằng AI'}
+          {loading ? (
+            <>
+              <svg className="animate-spin w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              <span>Đang tạo lịch trình...</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              <span>✨ Tạo bằng AI</span>
+            </>
+          )}
         </button>
 
         {loading && (
-          <div className="text-center mt-6">
-            <p>Đang tạo lịch trình cá nhân hóa của bạn...</p>
+          <div className="text-center mt-8 p-6 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl border border-teal-100">
+            <div className="flex items-center justify-center space-x-3 mb-3">
+              <div className="w-3 h-3 bg-teal-500 rounded-full animate-bounce"></div>
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
+              <div className="w-3 h-3 bg-teal-500 rounded-full animate-bounce delay-200"></div>
+            </div>
+            <p className="text-gray-700 font-medium">Đang tạo lịch trình cá nhân hóa của bạn...</p>
+            <p className="text-gray-500 text-sm mt-1">Vui lòng đợi trong giây lát</p>
           </div>
         )}
 
         {itinerary && (
           <>
             {console.log('itinerary:', itinerary)}
-            <div className="mt-8 border-t pt-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Lịch trình đề xuất của bạn cho {location}</h2>
+            <div className="mt-12 border-t border-gray-200 pt-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">
+                  Lịch trình đề xuất cho <span className="text-teal-600">{location}</span>
+                </h2>
+                <p className="text-gray-600">Được tạo bởi AI dựa trên sở thích và ngân sách của bạn</p>
+              </div>
 
               {locationImage && (
-                <img src={locationImage} alt={location} className="w-full h-64 object-cover rounded-lg mb-6" />
+                <img src={locationImage} alt={location} className="w-full h-64 object-cover rounded-2xl mb-8 shadow-lg" />
               )}
               
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-gray-700">Lựa chọn chỗ ở (trong ngân sách)</h3>
+              <div className="mb-12">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-teal-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800">Lựa chọn chỗ ở</h3>
+                  <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Trong ngân sách</span>
+                </div>
                 {itinerary.lodgingOptions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8">
+                  <div className="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-2xl">
                     <div className="mb-4" style={{ width: '200px', height: '200px' }}>
                       <DotLottieReact
                         src="https://lottie.host/7d7382e3-5932-404e-8cc2-903fad5cbd69/Y4ymdAvvAy.lottie"
@@ -181,10 +222,10 @@ const PlanningPage = () => {
                         style={{ width: '100%', height: '100%' }}
                       />
                     </div>
-                    <p className="text-lg text-gray-500">Không tìm thấy phòng phù hợp với ngân sách của bạn.</p>
+                    <p className="text-lg text-gray-500 font-medium">Không tìm thấy phòng phù hợp với ngân sách của bạn</p>
                   </div>
                 ) : (
-                  <div className="relative mt-4 px-8">
+                  <div className="relative mt-6 px-8">
                     <Swiper
                       spaceBetween={20}
                       slidesPerView={4}
@@ -200,33 +241,38 @@ const PlanningPage = () => {
                     >
                       {itinerary.lodgingOptions.map((lodge, index) => (
                         <SwiperSlide key={index}>
-                          <Link to={"/"} className="block border rounded-lg hover:shadow-lg transition-shadow duration-300 h-full">
-                            <img src={lodge.image} alt={lodge.name} className="w-full h-40 object-cover rounded-t-lg" />
-                            <div className="p-4 h-[280px] flex flex-col overflow-hidden">
-                              <h4 className="font-bold text-lg">{lodge.name}</h4>
+                          <Link to={"/"} className="block border border-gray-200 rounded-2xl hover:shadow-xl transition-all duration-300 h-full bg-white hover:scale-105 overflow-hidden">
+                            <img src={lodge.image} alt={lodge.name} className="w-full h-48 object-cover" />
+                            <div className="p-5 h-[300px] flex flex-col overflow-hidden">
+                              <h4 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2">{lodge.name}</h4>
                               {lodge.benefit && (
-                                <p className="text-green-600 font-semibold">{lodge.benefit}</p>
+                                <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full mb-2">{lodge.benefit}</span>
                               )}
-                              <p className="text-gray-600">{lodge.price ? formatVND(lodge.price) : 'N/A'}</p>
+                              <p className="text-teal-600 font-bold text-lg mb-1">{lodge.price ? formatVND(lodge.price) : 'N/A'}</p>
                               {lodge.originalPrice && (
-                                <p className="text-gray-400 line-through">{formatVND(lodge.originalPrice)}</p>
+                                <p className="text-gray-400 line-through text-sm mb-2">{formatVND(lodge.originalPrice)}</p>
                               )}
-                              <p className="text-gray-600">Xếp hạng: {lodge.rating}</p>
+                              <div className="flex items-center mb-2">
+                                <svg className="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span className="text-gray-600 text-sm">{lodge.rating}</span>
+                              </div>
                               {lodge.reviewWord && (
-                                <p className="text-gray-600">Đánh giá: {lodge.reviewWord}</p>
+                                <p className="text-gray-600 text-sm mb-1">Đánh giá: {lodge.reviewWord}</p>
                               )}
                               {lodge.reviewCount && (
-                                <p className="text-gray-600">Số lượng đánh giá: {lodge.reviewCount}</p>
+                                <p className="text-gray-500 text-xs mb-2">{lodge.reviewCount} đánh giá</p>
                               )}
-                              <p className="text-gray-600">Loại: {lodge.type}</p>
+                              <span className="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full mb-2">{lodge.type}</span>
                               {lodge.address && (
-                                <p className="text-gray-600">Địa chỉ: {lodge.address}</p>
+                                <p className="text-gray-500 text-xs mb-2 line-clamp-2">{lodge.address}</p>
                               )}
                               {lodge.checkin && (
-                                <p className="text-gray-600">Check-in: {lodge.checkin}</p>
+                                <p className="text-gray-500 text-xs">Check-in: {lodge.checkin}</p>
                               )}
                               {lodge.checkout && (
-                                <p className="text-gray-600">Check-out: {lodge.checkout}</p>
+                                <p className="text-gray-500 text-xs">Check-out: {lodge.checkout}</p>
                               )}
                             </div>
                           </Link>
@@ -237,15 +283,31 @@ const PlanningPage = () => {
                 )}
               </div>
 
-              <div>
-                <h3 className="text-xl font-semibold text-gray-700">Điểm đến & Lịch trình</h3>
-                <ul className="list-disc list-inside mt-2 space-y-2">
+              <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-8">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-800">Điểm đến & Lịch trình</h3>
+                </div>
+                <div className="grid gap-4">
                   {itinerary.destinations.map((dest, index) => (
-                    <li key={index} className="text-gray-600">
-                      <span className="font-semibold">{dest.name}</span> - {dest.time}
-                    </li>
+                    <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-800 text-lg">{dest.name}</h4>
+                          <p className="text-gray-600 text-sm mt-1">{dest.time}</p>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           </>
