@@ -47,6 +47,7 @@ const LandingPage = () => {
                     <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-white opacity-10 rounded-full animate-float"></div>
                 </div>
                 <div className="relative z-10 text-center flex flex-col gap-12 pt-32 pb-16 px-6 max-w-6xl mx-auto">
+            <div className="relative z-10 text-center flex flex-col gap-12 pt-32 pb-16 px-6 max-w-6xl mx-auto">
                 <section className="header__text">
                     <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent animate-fade-in-up">
                         Lên Kế Hoạch Du Lịch <br />
@@ -86,7 +87,6 @@ const LandingPage = () => {
                             </div>
                         </div>
                     </div>
-                </div>
                 </div>
             </header>
 
