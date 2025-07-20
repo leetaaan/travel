@@ -133,7 +133,7 @@ const LandingPage = () => {
                     </section>
                 </div>
                 </div>
-            </div>
+        
         </>
     );
 };
