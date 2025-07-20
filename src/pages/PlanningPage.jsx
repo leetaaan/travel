@@ -85,10 +85,10 @@ const PlanningPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex flex-col items-center p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 flex flex-col items-center p-6">
       <div className="w-full max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-2xl p-8 mt-10 border border-white/20">
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Công cụ lập kế hoạch hành trình
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
@@ -156,7 +156,7 @@ const PlanningPage = () => {
         <button
           onClick={handleGenerateItinerary}
           disabled={loading}
-          className="w-full bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold py-4 px-8 rounded-xl hover:from-teal-600 hover:to-blue-600 transition-all duration-300 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none flex items-center justify-center space-x-3"
+          className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
         >
           {loading ? (
             <>
@@ -176,14 +176,14 @@ const PlanningPage = () => {
         </button>
 
         {loading && (
-          <div className="text-center mt-8 p-6 bg-gradient-to-r from-teal-50 to-blue-50 rounded-xl border border-teal-100">
+          <div className="text-center mt-8 p-6 bg-gray-50 dark:bg-dark-800 rounded-xl border border-gray-200 dark:border-dark-600">
             <div className="flex items-center justify-center space-x-3 mb-3">
-              <div className="w-3 h-3 bg-teal-500 rounded-full animate-bounce"></div>
-              <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-              <div className="w-3 h-3 bg-teal-500 rounded-full animate-bounce delay-200"></div>
+              <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"></div>
+              <div className="w-3 h-3 bg-primary-600 rounded-full animate-bounce delay-100"></div>
+              <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce delay-200"></div>
             </div>
-            <p className="text-gray-700 font-medium">Đang tạo lịch trình cá nhân hóa của bạn...</p>
-            <p className="text-gray-500 text-sm mt-1">Vui lòng đợi trong giây lát</p>
+            <p className="text-gray-700 dark:text-gray-200 font-medium">Đang tạo lịch trình cá nhân hóa của bạn...</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Vui lòng đợi trong giây lát</p>
           </div>
         )}
 
@@ -193,7 +193,7 @@ const PlanningPage = () => {
             <div className="mt-12 border-t border-gray-200 pt-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                  Lịch trình đề xuất cho <span className="text-teal-600">{location}</span>
+                  Lịch trình đề xuất cho <span className="text-primary-600">{location}</span>
                 </h2>
                 <p className="text-gray-600">Được tạo bởi AI dựa trên sở thích và ngân sách của bạn</p>
               </div>
@@ -204,7 +204,7 @@ const PlanningPage = () => {
               
               <div className="mb-12">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-teal-500 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
@@ -248,7 +248,7 @@ const PlanningPage = () => {
                               {lodge.benefit && (
                                 <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full mb-2">{lodge.benefit}</span>
                               )}
-                              <p className="text-teal-600 font-bold text-lg mb-1">{lodge.price ? formatVND(lodge.price) : 'N/A'}</p>
+                              <p className="text-primary-600 font-bold text-lg mb-1">{lodge.price ? formatVND(lodge.price) : 'N/A'}</p>
                               {lodge.originalPrice && (
                                 <p className="text-gray-400 line-through text-sm mb-2">{formatVND(lodge.originalPrice)}</p>
                               )}
@@ -283,9 +283,9 @@ const PlanningPage = () => {
                 )}
               </div>
 
-              <div className="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-8">
+              <div className="bg-gray-50 dark:bg-dark-800 rounded-2xl p-8">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -297,7 +297,7 @@ const PlanningPage = () => {
                   {itinerary.destinations.map((dest, index) => (
                     <div key={index} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                       <div className="flex items-start space-x-4">
-                        <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
                           {index + 1}
                         </div>
                         <div className="flex-1">
