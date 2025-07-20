@@ -83,8 +83,6 @@ const LandingPage = () => {
                                     <div className="h-8 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full mt-6"></div>
                                 </div>
                                 <div className="h-8 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full mt-6"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </header>
