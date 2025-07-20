@@ -115,27 +115,3 @@ const Sidebar = ({ onSelectGroup, tripId, userId }) => {
 };
 
 export default Sidebar;
-        {groups.map(group => (
-          <li key={group.id} className="mb-2">
-            <a href="#" onClick={() => onSelectGroup(group)} className="text-gray-700 hover:text-teal-500">{group.name}</a>
-          </li>
-        ))}
-      </ul>
-      <div className="mt-4">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-teal-500 text-white rounded-lg p-2 w-full hover:bg-teal-600"
-        >
-          Tạo nhóm
-        </button>
-      </div>
-      <CreateGroupModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCreateGroup={handleCreateGroup}
-      />
-    </div>
-  );
-};
-
-export default Sidebar;
