@@ -311,13 +311,13 @@ const TopMenu = () => {
   return (
     <div className="bg-white/95 dark:bg-dark-800/95 backdrop-blur-md shadow-lg border-b border-gray-100 dark:border-dark-700 p-4 flex justify-between items-center sticky top-0 z-50 transition-colors duration-300">
       <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div className="w-10 h-10 bg-primary-600 dark:bg-primary-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
         </div>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent">Travel Planner</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Travel Planner</h1>
       </div>
       <div className="flex-1 flex justify-center mx-6 relative">
         <div className="relative w-full max-w-md">
@@ -354,7 +354,7 @@ const TopMenu = () => {
                 </div>
                 <button
                   onClick={() => sendFriendRequest(result.id, result.fullName || result.email, result.email)}
-                  className="bg-gradient-to-r from-primary-500 to-blue-500 text-white text-sm rounded-full px-4 py-2 hover:from-primary-600 hover:to-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+                  className="bg-primary-600 hover:bg-primary-700 text-white text-sm rounded-full px-4 py-2 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
                   disabled={friendsList.includes(result.id) || pendingRequests.some(req => req.receiverId === result.id)}
                 >
                   {friendsList.includes(result.id) ? 'Đã là bạn bè' : pendingRequests.some(req => req.receiverId === result.id) ? 'Đang chờ' : 'Kết bạn'}
@@ -367,7 +367,7 @@ const TopMenu = () => {
       <div className="flex items-center space-x-4">
         {user && userData ? (
           <>
-            <Link to="/planning" className="bg-gradient-to-r from-primary-500 to-blue-500 text-white rounded-full py-2 px-6 hover:from-primary-600 hover:to-blue-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105">
+            <Link to="/planning" className="bg-primary-600 hover:bg-primary-700 text-white rounded-full py-2 px-6 transition-all duration-200 font-medium shadow-md hover:shadow-lg">
               Xây dựng lịch trình
             </Link>
             <div className="relative" ref={notificationRef}>
