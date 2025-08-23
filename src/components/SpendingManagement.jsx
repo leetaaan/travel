@@ -29,7 +29,7 @@ const SpendingManagement = ({ group, currentUser }) => {
       <p className="text-gray-700 mb-6">Tại đây bạn có thể theo dõi và quản lý các khoản chi tiêu của nhóm.</p>
 
       <div className="mb-8">
-        <SpendingTable />
+        <SpendingTable group={group} currentUser={currentUser} />
       </div>
 
       <GroupMembersModal

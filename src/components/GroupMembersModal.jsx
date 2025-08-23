@@ -11,19 +11,34 @@ const GroupMembersModal = ({ isOpen, onClose, group, currentUser }) => {
   useEffect(() => {
     const fetchGroupDetails = async () => {
       if (group && group.id) {
-        const groupDocRef = doc(db, "groups", group.id);
-        const groupDocSnap = await getDoc(groupDocRef);
-        if (groupDocSnap.exists() && groupDocSnap.data().members) {
-          const memberUids = groupDocSnap.data().members;
-          const memberDetails = await Promise.all(
-            memberUids.map(async (uid) => {
-              const userDocRef = doc(db, "users", uid);
-              const userDocSnap = await getDoc(userDocRef);
-              return userDocSnap.exists() ? { id: uid, ...userDocSnap.data() } : null;
-            })
-          );
-          setGroupMembers(memberDetails.filter(Boolean));
-        } else {
+        try {
+          const groupDocRef = doc(db, "groups", group.id);
+          const groupDocSnap = await getDoc(groupDocRef);
+          if (groupDocSnap.exists() && groupDocSnap.data().members) {
+            const memberUids = groupDocSnap.data().members;
+            const memberDetails = await Promise.all(
+              memberUids.map(async (uid) => {
+                try {
+                  const userDocRef = doc(db, "users", uid);
+                  const userDocSnap = await getDoc(userDocRef);
+                  return userDocSnap.exists() ? { id: uid, ...userDocSnap.data() } : null;
+                } catch (error) {
+                  console.error(`Error fetching user ${uid}:`, error);
+                  return null;
+                }
+              })
+            );
+            setGroupMembers(memberDetails.filter(Boolean));
+          } else {
+            setGroupMembers([]);
+          }
+        } catch (error) {
+          console.error("Error fetching group details:", error);
+          if (error.code === 'permission-denied') {
+            toast.error("Bạn không có quyền xem thông tin nhóm này.");
+          } else {
+            toast.error("Có lỗi xảy ra khi tải thông tin nhóm.");
+          }
           setGroupMembers([]);
         }
       }
@@ -31,17 +46,31 @@ const GroupMembersModal = ({ isOpen, onClose, group, currentUser }) => {
 
     const fetchFriends = async () => {
       if (currentUser && currentUser.uid) {
-        const friendsCollectionRef = collection(db, "users", currentUser.uid, "friends");
-        const friendsData = [];
-        const friendsSnapshot = await getDocs(friendsCollectionRef);
-        for (const friendDoc of friendsSnapshot.docs) {
-          const friendUserDocRef = doc(db, "users", friendDoc.id);
-          const friendUserDocSnap = await getDoc(friendUserDocRef);
-          if (friendUserDocSnap.exists()) {
-            friendsData.push({ id: friendDoc.id, ...friendUserDocSnap.data() });
+        try {
+          const friendsCollectionRef = collection(db, "users", currentUser.uid, "friends");
+          const friendsData = [];
+          const friendsSnapshot = await getDocs(friendsCollectionRef);
+          for (const friendDoc of friendsSnapshot.docs) {
+            try {
+              const friendUserDocRef = doc(db, "users", friendDoc.id);
+              const friendUserDocSnap = await getDoc(friendUserDocRef);
+              if (friendUserDocSnap.exists()) {
+                friendsData.push({ id: friendDoc.id, ...friendUserDocSnap.data() });
+              }
+            } catch (error) {
+              console.error(`Error fetching friend ${friendDoc.id}:`, error);
+            }
           }
+          setFriends(friendsData);
+        } catch (error) {
+          console.error("Error fetching friends:", error);
+          if (error.code === 'permission-denied') {
+            toast.error("Bạn không có quyền xem danh sách bạn bè.");
+          } else {
+            toast.error("Có lỗi xảy ra khi tải danh sách bạn bè.");
+          }
+          setFriends([]);
         }
-        setFriends(friendsData);
       }
     };
 

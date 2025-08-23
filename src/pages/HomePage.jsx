@@ -1,27 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import { useTheme } from '../contexts/ThemeContext';
 import TopMenu from '../components/TopMenu';
 import Sidebar from '../components/Sidebar';
 import MapDashboard from '../components/MapDashboard';
 import SpendingManagement from '../components/SpendingManagement';
+import AuthDebug from '../components/AuthDebug';
+import { runFirestoreTest } from '../utils/firestoreTest';
 
 const HomePage = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [user, setUser] = useState(null);
   const { isDark } = useTheme();
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        try {
+          const docRef = doc(db, "users", currentUser.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setUserData({ ...docSnap.data(), uid: currentUser.uid });
+          } else {
+            setUserData({ uid: currentUser.uid, email: currentUser.email });
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setUserData({ uid: currentUser.uid, email: currentUser.email });
+        }
+      } else {
+        setUserData(null);
+      }
     });
     return () => unsubscribe();
+  }, []);
+
+  // Add test function to window for debugging
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.runFirestoreTest = runFirestoreTest;
+      console.log('Firestore test function available: window.runFirestoreTest()');
+    }
   }, []);
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
       <TopMenu />
+      <AuthDebug />
       <div className="flex flex-1 overflow-hidden">
         {user ? (
           <Sidebar onSelectGroup={setSelectedGroup} tripId="trip123" userId={user.uid} />
@@ -35,7 +64,7 @@ const HomePage = () => {
         )}
         <main className="flex-1 p-4 overflow-y-auto bg-white dark:bg-dark-900">
           {selectedGroup ? (
-            <SpendingManagement group={selectedGroup} currentUser={user} />
+            <SpendingManagement group={selectedGroup} currentUser={userData} />
           ) : (
             <MapDashboard />
           )}
