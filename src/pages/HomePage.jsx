@@ -7,8 +7,8 @@ import TopMenu from '../components/TopMenu';
 import Sidebar from '../components/Sidebar';
 import MapDashboard from '../components/MapDashboard';
 import SpendingManagement from '../components/SpendingManagement';
-import AuthDebug from '../components/AuthDebug';
-import { runFirestoreTest } from '../utils/firestoreTest';
+
+
 
 const HomePage = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -39,18 +39,12 @@ const HomePage = () => {
     return () => unsubscribe();
   }, []);
 
-  // Add test function to window for debugging
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.runFirestoreTest = runFirestoreTest;
-      console.log('Firestore test function available: window.runFirestoreTest()');
-    }
-  }, []);
+  
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
       <TopMenu />
-      <AuthDebug />
+      
       <div className="flex flex-1 overflow-hidden">
         {user ? (
           <Sidebar onSelectGroup={setSelectedGroup} tripId="trip123" userId={user.uid} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, addDoc, updateDoc, arrayRemove, arrayUnion } from 'firebase/firestore';
 import { toast } from 'react-hot-toast';
 
 const GroupMembersModal = ({ isOpen, onClose, group, currentUser }) => {
@@ -81,54 +81,45 @@ const GroupMembersModal = ({ isOpen, onClose, group, currentUser }) => {
   }, [isOpen, group, currentUser]);
 
   const handleInviteFriend = async () => {
-    if (!selectedFriendToInvite || !group || !currentUser) {
-      toast.error("Vui lòng chọn bạn bè và nhóm.");
-      return;
+  if (!selectedFriendToInvite || !group || !currentUser) {
+    toast.error("Vui lòng chọn bạn bè và nhóm.");
+    return;
+  }
+
+  // Check if đã là thành viên
+  if (groupMembers.some(member => member.id === selectedFriendToInvite)) {
+    toast.error("Người này đã là thành viên của nhóm.");
+    return;
+  }
+
+  try {
+    const groupDocRef = doc(db, "groups", group.id);
+    await updateDoc(groupDocRef, {
+      members: arrayUnion(selectedFriendToInvite)
+    });
+
+    toast.success("Đã thêm bạn bè vào nhóm!");
+
+    // reload members list
+    const groupDocSnap = await getDoc(groupDocRef);
+    if (groupDocSnap.exists() && groupDocSnap.data().members) {
+      const memberUids = groupDocSnap.data().members;
+      const memberDetails = await Promise.all(
+        memberUids.map(async (uid) => {
+          const userDocRef = doc(db, "users", uid);
+          const userDocSnap = await getDoc(userDocRef);
+          return userDocSnap.exists() ? { id: uid, ...userDocSnap.data() } : null;
+        })
+      );
+      setGroupMembers(memberDetails.filter(Boolean));
     }
 
-    const friendToInvite = friends.find(f => f.id === selectedFriendToInvite);
-    if (!friendToInvite) {
-      toast.error("Bạn bè không hợp lệ.");
-      return;
-    }
-
-    // Check if already a member
-    if (groupMembers.some(member => member.id === selectedFriendToInvite)) {
-      toast.error("Người này đã là thành viên của nhóm.");
-      return;
-    }
-
-    // Check if invitation already sent
-    const existingInvitationQuery = query(
-      collection(db, "groupInvitations"),
-      where("groupId", "==", group.id),
-      where("receiverId", "==", selectedFriendToInvite),
-      where("status", "==", "pending")
-    );
-    const existingInvitationSnapshot = await getDocs(existingInvitationQuery);
-    if (!existingInvitationSnapshot.empty) {
-      toast.error("Lời mời đã được gửi đến người này.");
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "groupInvitations"), {
-        groupId: group.id,
-        groupName: group.name,
-        senderId: currentUser.uid,
-        senderName: currentUser.fullName || currentUser.email,
-        receiverId: selectedFriendToInvite,
-        receiverName: friendToInvite.fullName || friendToInvite.email,
-        status: "pending",
-        timestamp: new Date(),
-      });
-      toast.success(`Đã gửi lời mời đến ${friendToInvite.fullName || friendToInvite.email}!`);
-      setSelectedFriendToInvite('');
-    } catch (error) {
-      console.error("Error sending group invitation:", error);
-      toast.error("Gửi lời mời thất bại.");
-    }
-  };
+    setSelectedFriendToInvite("");
+  } catch (error) {
+    console.error("Error adding member:", error);
+    toast.error("Thêm thành viên thất bại.");
+  }
+};
 
   const handleRemoveMember = async (memberId) => {
     if (!group || !currentUser || !group.id) return;

@@ -1,121 +1,478 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
+"use client"
 
-const LandingPage = () => {
-    const { isDark } = useTheme();
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Wallet,
+  MapPin,
+  PieChart,
+  Calendar,
+  Shield,
+  Smartphone,
+  Star,
+  Menu,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react"
+import { motion } from "framer-motion"
 
-    useEffect(() => {
-        const preloader = document.getElementById('preloader');
-        if (preloader) {
-            setTimeout(() => {
-                preloader.classList.add('opacity-0', 'pointer-events-none');
-                document.body.style.overflow = 'auto'; // Re-enable scrolling
-            }, 1500); // Match preloader animation duration
-        }
-    }, []);
+const fadeInUp = {
+  initial: { opacity: 0, y: 60 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" },
+}
 
-    return (
-        <>
-            <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-50 dark:from-dark-900 dark:to-dark-800 z-[1000] transition-opacity duration-500 ease-linear" id="preloader">
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="relative">
-                        <span className="absolute w-16 h-16 bg-primary-500 opacity-60 rounded-full animate-ping"></span>
-                        <span className="absolute w-16 h-16 bg-blue-500 opacity-40 rounded-full animate-ping animation-delay-300"></span>
-                        <span className="relative w-16 h-16 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full flex items-center justify-center">
-                            <svg className="w-8 h-8 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6l4 2"></path>
-                            </svg>
-                        </span>
-                    </div>
-                    <p className="text-primary-600 dark:text-primary-400 font-medium animate-pulse">Đang tải...</p>
-                </div>
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const scaleOnHover = {
+  whileHover: { scale: 1.05 },
+  transition: { type: "spring", stiffness: 300 },
+}
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <Wallet className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold text-foreground">TravelBudget</span>
+            </motion.div>
+
+            <nav className="hidden md:flex items-center space-x-8">
+              {["Tính năng", "Đánh giá", "Giá cả", "Liên hệ"].map((item, index) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 + 0.2 }}
+                  whileHover={{ y: -2 }}
+                >
+                  {item}
+                </motion.a>
+              ))}
+            </nav>
+
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="sm" className="hidden sm:inline-flex bg-transparent">
+                Đăng nhập
+              </Button>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="sm">Bắt đầu ngay</Button>
+              </motion.div>
+              <Button variant="ghost" size="sm" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
             </div>
+          </div>
+        </div>
+      </motion.header>
 
-            <button className="fixed bottom-6 right-6 w-12 h-12 bg-gradient-to-r from-primary-500 to-blue-500 text-white flex items-center justify-center rounded-full transition-all duration-300 ease-linear z-10 opacity-0 hover:opacity-100 hover:scale-110 shadow-lg backdrop-blur-sm" aria-label="Go back to top">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                </svg>
-            </button>
+      {/* Hero Section */}
+      <section className="py-20 lg:py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              className="space-y-8"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <div className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Badge variant="secondary" className="w-fit">
+                    🎉 Mới ra mắt - Miễn phí 30 ngày đầu
+                  </Badge>
+                </motion.div>
+                <motion.h1
+                  className="text-4xl lg:text-6xl font-bold text-foreground text-balance"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                >
+                  Quản lý chi tiêu, lên kế hoạch du lịch <span className="text-primary">dễ dàng</span>
+                </motion.h1>
+                <motion.p
+                  className="text-xl text-muted-foreground text-pretty max-w-2xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.6 }}
+                >
+                  Theo dõi chi tiêu thông minh, lập ngân sách hiệu quả và lên kế hoạch cho những chuyến du lịch hoàn
+                  hảo. Tất cả trong một ứng dụng đơn giản và dễ sử dụng.
+                </motion.p>
+              </div>
 
+              <motion.div
+                className="flex flex-col sm:flex-row gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button size="lg" className="text-lg px-8">
+                    Bắt đầu miễn phí
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
+                    Tìm hiểu thêm
+                  </Button>
+                </motion.div>
+              </motion.div>
 
-            <header id="header" className="relative bg-primary-600 dark:bg-primary-800 text-white overflow-hidden">
-                <div className="absolute inset-0 bg-black opacity-10"></div>
-                <div className="relative z-10 text-center flex flex-col gap-12 pt-32 pb-16 px-6 max-w-6xl mx-auto">
-                <section className="header__text">
-                    <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 text-white animate-fade-in-up">
-                        Lên Kế Hoạch Du Lịch <br />
-                        <span className="text-4xl md:text-5xl">Cùng Nhau</span>
-                    </h1>
-                    <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-150">
-                        Tạo lịch trình du lịch hợp tác với gợi ý từ AI và quản lý chi phí nhóm một cách dễ dàng
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up delay-300">
-                        <Link to="/login" className="group bg-white text-primary-600 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-gray-50 hover:shadow-xl flex items-center gap-3">
-                            <span>Bắt Đầu Ngay</span>
-                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                            </svg>
-                        </Link>
-                        <Link to="/planning" className="group border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 hover:bg-white hover:text-primary-600 flex items-center gap-3">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                            </svg>
-                            <span>Khám Phá Tính Năng</span>
-                        </Link>
-                    </div>
-                </section>
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-primary-400 rounded-3xl blur-xl opacity-30 animate-pulse"></div>
-                </div>
-            </header>
+              <motion.div
+                className="flex items-center space-x-8 pt-4"
+                variants={staggerContainer}
+                initial="initial"
+                animate="animate"
+              >
+                {["Miễn phí 30 ngày", "Không cần thẻ tín dụng", "Hủy bất cứ lúc nào"].map((text, index) => (
+                  <motion.div key={text} className="flex items-center space-x-2" variants={fadeInUp}>
+                    <CheckCircle className="h-5 w-5 text-primary" />
+                    <span className="text-sm text-muted-foreground">{text}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
 
-            <div className="bg-gray-50 dark:bg-dark-900 py-20 px-6 transition-colors duration-300" id="features">
-                <div className="max-w-7xl mx-auto">
-                <section className="text-center mb-20">
-                    <span className="inline-block bg-primary-600 text-white text-sm font-semibold uppercase px-4 py-2 rounded-full mb-4 animate-fade-in-up">
-                        Tính Năng
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 leading-tight mb-6 animate-fade-in-up delay-150">
-                        Mọi Thứ Bạn Cần Cho <br />
-                        <span className="text-primary-600 dark:text-primary-400">Chuyến Đi Hoàn Hảo</span>
-                    </h2>
-                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-fade-in-up delay-300">
-                        Lập kế hoạch du lịch, quản lý chi phí và hợp tác với nhóm của bạn, tất cả trong một nơi
-                    </p>
-                </section>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <section className="group bg-white dark:bg-dark-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-dark-700">
-                        <div className="w-16 h-16 bg-yellow-500 text-white text-2xl flex justify-center items-center rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                            </svg>
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="relative z-10">
+                <motion.img
+                  src="/modern-travel-planning-app-interface-showing-expen.png"
+                  alt="TravelBudget App Interface"
+                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
+                  whileHover={{ scale: 1.05, rotateY: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                />
+              </div>
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl transform scale-110"
+                animate={{
+                  scale: [1.1, 1.2, 1.1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center space-y-4 mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Badge variant="outline" className="w-fit mx-auto">
+              Tính năng nổi bật
+            </Badge>
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">
+              Mọi thứ bạn cần cho chuyến du lịch hoàn hảo
+            </h2>
+            <p className="text-xl text-muted-foreground text-pretty max-w-3xl mx-auto">
+              Từ việc theo dõi chi tiêu hàng ngày đến lập kế hoạch chi tiết cho chuyến du lịch, chúng tôi có tất cả
+              những gì bạn cần.
+            </p>
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                icon: Wallet,
+                title: "Theo dõi chi tiêu",
+                description:
+                  "Ghi lại mọi khoản chi tiêu một cách dễ dàng với giao diện trực quan. Phân loại tự động và báo cáo chi tiết.",
+                color: "primary",
+              },
+              {
+                icon: PieChart,
+                title: "Lập ngân sách thông minh",
+                description:
+                  "Tạo ngân sách cho từng chuyến du lịch với các danh mục chi tiết. Nhận cảnh báo khi sắp vượt ngân sách.",
+                color: "secondary",
+              },
+              {
+                icon: MapPin,
+                title: "Lên kế hoạch du lịch",
+                description:
+                  "Tạo lịch trình chi tiết với ước tính chi phí cho mỗi hoạt động. Lưu trữ thông tin địa điểm và ghi chú quan trọng.",
+                color: "primary",
+              },
+              {
+                icon: Calendar,
+                title: "Quản lý lịch trình",
+                description:
+                  "Sắp xếp các hoạt động theo thời gian với giao diện lịch trực quan. Đồng bộ với lịch cá nhân của bạn.",
+                color: "secondary",
+              },
+              {
+                icon: Shield,
+                title: "Bảo mật tuyệt đối",
+                description:
+                  "Dữ liệu của bạn được mã hóa và bảo vệ với các tiêu chuẩn bảo mật cao nhất. Sao lưu tự động và đồng bộ đa thiết bị.",
+                color: "primary",
+              },
+              {
+                icon: Smartphone,
+                title: "Sử dụng mọi lúc mọi nơi",
+                description:
+                  "Ứng dụng hoạt động trên mọi thiết bị - điện thoại, máy tính bảng và máy tính. Giao diện thân thiện và dễ sử dụng.",
+                color: "secondary",
+              },
+            ].map((feature, index) => (
+              <motion.div key={feature.title} variants={fadeInUp}>
+                <motion.div {...scaleOnHover}>
+                  <Card className="border-border hover:shadow-lg transition-shadow h-full">
+                    <CardHeader>
+                      <div className="flex items-center space-x-3">
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-${feature.color}/10`}>
+                          <feature.icon className={`h-6 w-6 text-${feature.color}`} />
                         </div>
-                        <h3 className="text-gray-800 dark:text-gray-100 text-xl font-bold mb-4 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">Gợi Ý Từ AI</h3>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Nhận các đề xuất thông minh về điểm đến, hoạt động và nhà hàng dựa trên sở thích của bạn</p>
-                    </section>
-                    <section className="group bg-white dark:bg-dark-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-dark-700">
-                        <div className="w-16 h-16 bg-blue-500 text-white text-2xl flex justify-center items-center rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
+                        <CardTitle>{feature.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base">{feature.description}</CardDescription>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center space-y-4 mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Badge variant="outline" className="w-fit mx-auto">
+              Khách hàng nói gì
+            </Badge>
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">
+              Được tin tưởng bởi hàng nghìn người dùng
+            </h2>
+          </motion.div>
+
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                name: "Minh Hương",
+                role: "Du lịch gia đình",
+                avatar: "MH",
+                content:
+                  "Ứng dụng tuyệt vời! Giúp tôi tiết kiệm được rất nhiều tiền trong chuyến du lịch Đà Nẵng. Giao diện đẹp và dễ sử dụng.",
+                color: "primary",
+              },
+              {
+                name: "Tuấn Quang",
+                role: "Backpacker",
+                avatar: "TQ",
+                content:
+                  "Tính năng lập ngân sách rất hữu ích. Tôi có thể kiểm soát chi tiêu tốt hơn và không lo vượt quá ngân sách đã đề ra.",
+                color: "secondary",
+              },
+              {
+                name: "Linh Anh",
+                role: "Doanh nhân",
+                avatar: "LA",
+                content:
+                  "Đồng bộ đa thiết bị rất tiện lợi. Tôi có thể cập nhật chi tiêu trên điện thoại và xem báo cáo chi tiết trên máy tính.",
+                color: "primary",
+              },
+            ].map((testimonial, index) => (
+              <motion.div key={testimonial.name} variants={fadeInUp}>
+                <motion.div {...scaleOnHover}>
+                  <Card className="border-border h-full">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center space-x-1 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                        ))}
+                      </div>
+                      <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className={`h-10 w-10 rounded-full bg-${testimonial.color}/10 flex items-center justify-center`}
+                        >
+                          <span className={`text-sm font-medium text-${testimonial.color}`}>{testimonial.avatar}</span>
                         </div>
-                        <h3 className="text-gray-800 dark:text-gray-100 text-xl font-bold mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Lập Kế Hoạch Cộng Tác</h3>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Mời bạn bè cùng lập kế hoạch theo thời gian thực. Chia sẻ ý tưởng, tạo bình chọn và xây dựng lịch trình cùng nhau</p>
-                    </section>
-                    <section className="group bg-white dark:bg-dark-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100 dark:border-dark-700">
-                        <div className="w-16 h-16 bg-green-500 text-white text-2xl flex justify-center items-center rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
+                        <div>
+                          <p className="font-medium text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                         </div>
-                        <h3 className="text-gray-800 dark:text-gray-100 text-xl font-bold mb-4 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Theo Dõi Chi Phí Nhóm</h3>
-                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed">Dễ dàng chia hóa đơn, theo dõi ai đã trả gì và thanh toán nợ cuối chuyến đi. Không còn cuộc trò chuyện khó xử về tiền bạc</p>
-                    </section>
-                </div>
-                </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <motion.section
+        className="py-20 bg-primary"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center space-y-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl lg:text-5xl font-bold text-primary-foreground text-balance">
+              Sẵn sàng cho chuyến du lịch tiếp theo?
+            </h2>
+            <p className="text-xl text-primary-foreground/80 text-pretty max-w-2xl mx-auto">
+              Tham gia cùng hàng nghìn người dùng đã tin tưởng TravelBudget để quản lý chi tiêu và lên kế hoạch du lịch
+              thông minh.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button size="lg" variant="secondary" className="text-lg px-8">
+                  Bắt đầu miễn phí ngay
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
+                >
+                  Xem demo
+                </Button>
+              </motion.div>
             </div>
-        </>
-    );
-};
+          </motion.div>
+        </div>
+      </motion.section>
 
-export default LandingPage;
+      {/* Footer */}
+      <footer className="bg-muted py-16">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            <motion.div className="space-y-4" variants={fadeInUp}>
+              <div className="flex items-center space-x-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                  <Wallet className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <span className="text-xl font-bold text-foreground">TravelBudget</span>
+              </div>
+              <p className="text-muted-foreground">
+                Ứng dụng quản lý chi tiêu và lên kế hoạch du lịch thông minh cho người Việt.
+              </p>
+            </motion.div>
+
+            {[
+              {
+                title: "Sản phẩm",
+                links: ["Tính năng", "Giá cả", "Bảo mật", "API"],
+              },
+              {
+                title: "Hỗ trợ",
+                links: ["Trung tâm trợ giúp", "Liên hệ", "Hướng dẫn", "Blog"],
+              },
+              {
+                title: "Pháp lý",
+                links: ["Chính sách bảo mật", "Điều khoản sử dụng", "Cookie"],
+              },
+            ].map((section, index) => (
+              <motion.div key={section.title} className="space-y-4" variants={fadeInUp}>
+                <h3 className="font-semibold text-foreground">{section.title}</h3>
+                <ul className="space-y-2 text-muted-foreground">
+                  {section.links.map((link) => (
+                    <li key={link}>
+                      <motion.a href="#" className="hover:text-foreground transition-colors" whileHover={{ x: 5 }}>
+                        {link}
+                      </motion.a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="border-t border-border mt-12 pt-8 text-center text-muted-foreground"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            <p>&copy; 2024 TravelBudget. Tất cả quyền được bảo lưu.</p>
+          </motion.div>
+        </div>
+      </footer>
+    </div>
+  )
+}
