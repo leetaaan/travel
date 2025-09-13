@@ -1,4 +1,8 @@
+"use client"
+
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
@@ -6,143 +10,341 @@ import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { generateRandomAvatar } from '../utils/avatarUtils';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Plane, MapPin, Camera, Heart } from "lucide-react"
 
 const AuthForm = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { isDark } = useTheme();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
     try {
-      if (isRegistering) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        const avatarUrl = generateRandomAvatar();
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: user.email,
-          fullName: fullName,
-          profile_img: avatarUrl,
-          createdAt: new Date(),
-        });
-        toast.success('Đăng ký thành công!');
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-        toast.success('Đăng nhập thành công!');
-      }
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Đăng nhập thành công!');
       navigate('/home');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+    try {
+      if (password !== confirmPassword) {
+        throw new Error('Mật khẩu xác nhận không khớp');
+      }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const avatarUrl = generateRandomAvatar();
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        fullName: `${firstName} ${lastName}`,
+        profile_img: avatarUrl,
+        createdAt: new Date(),
+      });
+      toast.success('Đăng ký thành công!');
+      navigate('/home');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-600 dark:bg-primary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-          </div>
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {isRegistering ? 'Đăng ký tài khoản' : 'Đăng nhập'}
-          </h3>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">
-            {isRegistering ? 'Tạo tài khoản mới để bắt đầu hành trình' : 'Chào mừng bạn trở lại'}
-          </p>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-4">
-            {isRegistering && (
-              <div>
-                <label htmlFor="full-name" className="sr-only">Full Name</label>
-                <input
-                  id="full-name"
-                  name="fullName"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-dark-500"
-                  placeholder="Họ và tên"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-              </div>
-            )}
-            <div>
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-dark-500"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-dark-600 bg-white dark:bg-dark-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 hover:border-gray-400 dark:hover:border-dark-500"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
+    <motion.div className="relative" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      {/* Background decoration */}
+      <div className="absolute -top-20 -left-20 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+      <div className="absolute -bottom-20 -right-20 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
 
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-400 dark:text-red-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
-              </div>
-            </div>
-          )}
+      <Card className="backdrop-blur-sm bg-card/95 border-border/50 shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          <div className="flex justify-center items-center gap-2 text-primary">
+            <Plane className="w-8 h-8" />
+            <span className="text-2xl font-bold">TravelBudget</span>
+          </div>
+          <div className="flex justify-center gap-4 text-muted-foreground">
+            <MapPin className="w-5 h-5" />
+            <Camera className="w-5 h-5" />
+            <Heart className="w-5 h-5" />
+          </div>
+        </CardHeader>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-semibold rounded-xl text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <span className="flex items-center">
-                {isRegistering ? 'Đăng ký' : 'Đăng nhập'}
-                <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                </svg>
-              </span>
-            </button>
-          </div>
-          
-          <div className="text-center">
-            <button 
-              type="button"
-              onClick={() => setIsRegistering(!isRegistering)} 
-              className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 transition-colors"
-            >
-              {isRegistering ? 'Đã có tài khoản? Đăng nhập ngay' : 'Chưa có tài khoản? Đăng ký ngay'}
-            </button>
-          </div>
-        </form>
-    </div>
+        <CardContent>
+          <Tabs defaultValue="login" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login" className="text-sm font-medium">
+                Đăng nhập
+              </TabsTrigger>
+              <TabsTrigger value="register" className="text-sm font-medium">
+                Đăng ký
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="login" className="space-y-4">
+              <div className="text-center mb-6">
+                <CardTitle className="text-2xl font-bold text-foreground mb-2">Chào mừng trở lại!</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Đăng nhập để tiếp tục hành trình khám phá của bạn
+                </CardDescription>
+              </div>
+
+              {error && (
+                <motion.div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 text-red-400 dark:text-red-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+                  </div>
+                </motion.div>
+              )}
+
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    className="bg-input border-border focus:ring-primary"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium">
+                    Mật khẩu
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="bg-input border-border focus:ring-primary pr-12"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none"
+                      aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember"
+                      className="border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <Label htmlFor="remember" className="text-sm text-muted-foreground cursor-pointer">
+                      Ghi nhớ đăng nhập
+                    </Label>
+                  </div>
+                  <Button variant="link" className="text-accent hover:text-accent/80 p-0 h-auto">
+                    Quên mật khẩu?
+                  </Button>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="register" className="space-y-4">
+              <div className="text-center mb-6">
+                <CardTitle className="text-2xl font-bold text-foreground mb-2">Tham gia cùng chúng tôi!</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Tạo tài khoản để bắt đầu cuộc phiêu lưu tiếp theo
+                </CardDescription>
+              </div>
+
+              {error && (
+                <motion.div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <div className="flex items-center">
+                    <svg className="w-5 h-5 text-red-400 dark:text-red-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+                  </div>
+                </motion.div>
+              )}
+
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName" className="text-sm font-medium">
+                      Họ
+                    </Label>
+                    <Input
+                      id="firstName"
+                      placeholder="Nguyễn"
+                      className="bg-input border-border focus:ring-primary"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName" className="text-sm font-medium">
+                      Tên
+                    </Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Văn A"
+                      className="bg-input border-border focus:ring-primary"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="registerEmail" className="text-sm font-medium">
+                    Email
+                  </Label>
+                  <Input
+                    id="registerEmail"
+                    type="email"
+                    placeholder="your@email.com"
+                    className="bg-input border-border focus:ring-primary"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="registerPassword" className="text-sm font-medium">
+                    Mật khẩu
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="registerPassword"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="bg-input border-border focus:ring-primary pr-12"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none"
+                      aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                    ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
+                    Xác nhận mật khẩu
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="bg-input border-border focus:ring-primary pr-12"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword((v) => !v)}
+                      className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none"
+                      aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    required
+                    className="border-2 border-primary data-[state=checked]:bg-primary data-[state=checked]:border-primary w-5 h-5"
+                  />
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer leading-relaxed">
+                    Tôi đồng ý với{" "}
+                    <Button variant="link" className="text-accent hover:text-accent/80 p-0 h-auto">
+                      Điều khoản dịch vụ
+                    </Button>
+                  </Label>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-medium"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+                </Button>
+              </form>
+
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Hãy sẵn sàng cho những trải nghiệm du lịch tuyệt vời! 🌟
+              </p>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

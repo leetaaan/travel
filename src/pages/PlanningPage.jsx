@@ -85,7 +85,7 @@ const PlanningPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 flex flex-col items-center p-6">
+    <div className="min-h-screen bg-[#F4F5F7] dark:bg-dark-900 flex flex-col items-center p-6">
       <div className="w-full max-w-7xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-2xl p-8 mt-10 border border-white/20">
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">

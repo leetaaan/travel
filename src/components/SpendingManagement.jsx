@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SpendingTable from './SpendingTable';
 import GroupMembersModal from './GroupMembersModal';
+import { Button } from "@/components/ui/button";
 
 const SpendingManagement = ({ group, currentUser }) => {
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
@@ -18,12 +19,9 @@ const SpendingManagement = ({ group, currentUser }) => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-3xl font-bold text-teal-600">Quản lý chi tiêu cho: {group.name}</h2>
         {currentUser && currentUser.uid === group.creatorId && (
-          <button
-            onClick={() => setIsMembersModalOpen(true)}
-            className="bg-teal-500 text-white rounded-lg px-4 py-2 hover:bg-teal-600"
-          >
+          <Button onClick={() => setIsMembersModalOpen(true)}>
             Quản lý thành viên
-          </button>
+          </Button>
         )}
       </div>
       <p className="text-gray-700 mb-6">Tại đây bạn có thể theo dõi và quản lý các khoản chi tiêu của nhóm.</p>

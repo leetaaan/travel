@@ -6,7 +6,7 @@ const LoginPage = () => {
   const { isDark } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-900 flex items-center justify-center p-6 transition-colors duration-300">
+    <div className="min-h-screen bg-[#F4F5F7] dark:bg-dark-900 flex items-center justify-center p-6 transition-colors duration-300">
         <div className="w-full max-w-md p-8 space-y-8 bg-white/80 dark:bg-dark-800/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 dark:border-dark-600/20">
             <AuthForm />
         </div>

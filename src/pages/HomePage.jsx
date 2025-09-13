@@ -42,9 +42,8 @@ const HomePage = () => {
   
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-dark-900 transition-colors duration-300">
+    <div className="flex flex-col h-screen bg-[#F4F5F7] dark:bg-dark-900 transition-colors duration-300">
       <TopMenu />
-      
       <div className="flex flex-1 overflow-hidden">
         {user ? (
           <Sidebar onSelectGroup={setSelectedGroup} tripId="trip123" userId={user.uid} />

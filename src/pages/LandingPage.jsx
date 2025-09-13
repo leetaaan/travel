@@ -16,6 +16,12 @@ import {
   CheckCircle,
 } from "lucide-react"
 import { motion } from "framer-motion"
+import { Link } from "react-router-dom"
+import { useState } from "react"
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Autoplay, Pagination } from "swiper/modules"
+import "swiper/css"
+import "swiper/css/pagination"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -37,6 +43,7 @@ const scaleOnHover = {
 }
 
 export default function LandingPage() {
+  const [mobileOpen, setMobileOpen] = useState(false)
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -56,34 +63,86 @@ export default function LandingPage() {
             </motion.div>
 
             <nav className="hidden md:flex items-center space-x-8">
-              {["Tính năng", "Đánh giá", "Giá cả", "Liên hệ"].map((item, index) => (
+              {[
+                { label: "Tính năng", id: "features" },
+                { label: "Đánh giá", id: "testimonials" },
+                { label: "Liên hệ", id: "contact" },
+              ].map((link, index) => (
                 <motion.a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    const el = document.getElementById(link.id)
+                    if (el) {
+                      const header = document.querySelector('header')
+                      const headerHeight = (header && header.offsetHeight) ? header.offsetHeight : 64
+                      const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 8
+                      window.scrollTo({ top: y, behavior: 'smooth' })
+                    }
+                  }}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
                   whileHover={{ y: -2 }}
                 >
-                  {item}
+                  {link.label}
                 </motion.a>
               ))}
             </nav>
 
             <div className="flex items-center space-x-4">
-              <Button variant="outline" size="sm" className="hidden sm:inline-flex bg-transparent">
-                Đăng nhập
-              </Button>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="sm">Bắt đầu ngay</Button>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="inline-flex">
+                  <Button size="sm">Bắt đầu miễn phí</Button>
+                </Link>
               </motion.div>
-              <Button variant="ghost" size="sm" className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden"
+                onClick={() => setMobileOpen((v) => !v)}
+              >
                 <Menu className="h-5 w-5" />
               </Button>
             </div>
           </div>
         </div>
+        {/* Mobile dropdown */}
+        <motion.div
+          className="md:hidden border-t border-border bg-background"
+          initial={false}
+          animate={{ height: mobileOpen ? "auto" : 0, opacity: mobileOpen ? 1 : 0 }}
+          style={{ overflow: "hidden" }}
+        >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-2">
+            {[
+              { label: "Tính năng", id: "features" },
+              { label: "Đánh giá", id: "testimonials" },
+              { label: "Liên hệ", id: "contact" },
+            ].map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
+                onClick={(e) => {
+                  e.preventDefault()
+                  const el = document.getElementById(link.id)
+                  if (el) {
+                    const header = document.querySelector('header')
+                    const headerHeight = (header && header.offsetHeight) ? header.offsetHeight : 64
+                    const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 8
+                    window.scrollTo({ top: y, behavior: 'smooth' })
+                  }
+                  setMobileOpen(false)
+                }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </motion.div>
       </motion.header>
 
       {/* Hero Section */}
@@ -132,10 +191,12 @@ export default function LandingPage() {
                 transition={{ delay: 0.5 }}
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="lg" className="text-lg px-8">
-                    Bắt đầu miễn phí
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
+                  <Link to="/login">
+                    <Button size="lg" className="text-lg px-8">
+                      Bắt đầu miễn phí
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
@@ -192,7 +253,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-muted/30">
+      <section id="features" className="py-20 bg-muted/30 scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center space-y-4 mb-16"
@@ -213,8 +274,82 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
+          {/* Mobile carousel */}
+          <div className="md:hidden">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              slidesPerView={1}
+              spaceBetween={16}
+              autoplay={{ delay: 2500, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              className="!pb-10"
+            >
+              {[
+                {
+                  icon: Wallet,
+                  title: "Theo dõi chi tiêu",
+                  description:
+                    "Ghi lại mọi khoản chi tiêu một cách dễ dàng với giao diện trực quan. Phân loại tự động và báo cáo chi tiết.",
+                  color: "primary",
+                },
+                {
+                  icon: PieChart,
+                  title: "Lập ngân sách thông minh",
+                  description:
+                    "Tạo ngân sách cho từng chuyến du lịch với các danh mục chi tiết. Nhận cảnh báo khi sắp vượt ngân sách.",
+                  color: "secondary",
+                },
+                {
+                  icon: MapPin,
+                  title: "Lên kế hoạch du lịch",
+                  description:
+                    "Tạo lịch trình chi tiết với ước tính chi phí cho mỗi hoạt động. Lưu trữ thông tin địa điểm và ghi chú quan trọng.",
+                  color: "primary",
+                },
+                {
+                  icon: Calendar,
+                  title: "Quản lý lịch trình",
+                  description:
+                    "Sắp xếp các hoạt động theo thời gian với giao diện lịch trực quan. Đồng bộ với lịch cá nhân của bạn.",
+                  color: "secondary",
+                },
+                {
+                  icon: Shield,
+                  title: "Bảo mật tuyệt đối",
+                  description:
+                    "Dữ liệu của bạn được mã hóa và bảo vệ với các tiêu chuẩn bảo mật cao nhất. Sao lưu tự động và đồng bộ đa thiết bị.",
+                  color: "primary",
+                },
+                {
+                  icon: Smartphone,
+                  title: "Sử dụng mọi lúc mọi nơi",
+                  description:
+                    "Ứng dụng hoạt động trên mọi thiết bị - điện thoại, máy tính bảng và máy tính. Giao diện thân thiện và dễ sử dụng.",
+                  color: "secondary",
+                },
+              ].map((feature) => (
+                <SwiperSlide key={feature.title}>
+                  <Card className="border-border hover:shadow-lg transition-shadow h-full">
+                    <CardHeader>
+                      <div className="flex items-center space-x-3">
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
+                          <feature.icon className={`h-6 w-6 ${feature.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
+                        </div>
+                        <CardTitle>{feature.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription className="text-base">{feature.description}</CardDescription>
+                    </CardContent>
+                  </Card>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          {/* Desktop grid */}
           <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8"
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
@@ -269,8 +404,8 @@ export default function LandingPage() {
                   <Card className="border-border hover:shadow-lg transition-shadow h-full">
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-${feature.color}/10`}>
-                          <feature.icon className={`h-6 w-6 text-${feature.color}`} />
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
+                          <feature.icon className={`h-6 w-6 ${feature.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
                         </div>
                         <CardTitle>{feature.title}</CardTitle>
                       </div>
@@ -287,7 +422,7 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20">
+      <section id="testimonials" className="py-20 scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center space-y-4 mb-16"
@@ -304,8 +439,70 @@ export default function LandingPage() {
             </h2>
           </motion.div>
 
+          {/* Mobile carousel */}
+          <div className="md:hidden">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              slidesPerView={1}
+              spaceBetween={16}
+              autoplay={{ delay: 2500, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              className="!pb-10"
+            >
+              {[
+                {
+                  name: "Minh Hương",
+                  role: "Du lịch gia đình",
+                  avatar: "MH",
+                  content:
+                    "Ứng dụng tuyệt vời! Giúp tôi tiết kiệm được rất nhiều tiền trong chuyến du lịch Đà Nẵng. Giao diện đẹp và dễ sử dụng.",
+                  color: "primary",
+                },
+                {
+                  name: "Tuấn Quang",
+                  role: "Backpacker",
+                  avatar: "TQ",
+                  content:
+                    "Tính năng lập ngân sách rất hữu ích. Tôi có thể kiểm soát chi tiêu tốt hơn và không lo vượt quá ngân sách đã đề ra.",
+                  color: "secondary",
+                },
+                {
+                  name: "Linh Anh",
+                  role: "Doanh nhân",
+                  avatar: "LA",
+                  content:
+                    "Đồng bộ đa thiết bị rất tiện lợi. Tôi có thể cập nhật chi tiêu trên điện thoại và xem báo cáo chi tiết trên máy tính.",
+                  color: "primary",
+                },
+              ].map((testimonial) => (
+                <SwiperSlide key={testimonial.name}>
+                  <Card className="border-border h-full">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center space-x-1 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                        ))}
+                      </div>
+                      <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                      <div className="flex items-center space-x-3">
+                        <div className={`h-10 w-10 rounded-full ${testimonial.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'} flex items-center justify-center`}>
+                          <span className={`text-sm font-medium ${testimonial.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>{testimonial.avatar}</span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">{testimonial.name}</p>
+                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+
+          {/* Desktop grid */}
           <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8"
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
@@ -348,10 +545,8 @@ export default function LandingPage() {
                       </div>
                       <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
                       <div className="flex items-center space-x-3">
-                        <div
-                          className={`h-10 w-10 rounded-full bg-${testimonial.color}/10 flex items-center justify-center`}
-                        >
-                          <span className={`text-sm font-medium text-${testimonial.color}`}>{testimonial.avatar}</span>
+                        <div className={`h-10 w-10 rounded-full ${testimonial.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'} flex items-center justify-center`}>
+                          <span className={`text-sm font-medium ${testimonial.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>{testimonial.avatar}</span>
                         </div>
                         <div>
                           <p className="font-medium text-foreground">{testimonial.name}</p>
@@ -410,6 +605,43 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </motion.section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-muted/30 scroll-mt-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="text-center space-y-4 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Badge variant="outline" className="w-fit mx-auto">Liên hệ</Badge>
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">Chúng tôi có thể giúp gì?</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Gửi câu hỏi, góp ý hoặc yêu cầu hỗ trợ – chúng tôi sẽ phản hồi sớm nhất.
+            </p>
+          </motion.div>
+
+          <div className="max-w-2xl mx-auto">
+            <Card className="border-border">
+              <CardContent className="pt-6 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <input className="w-full rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Họ và tên" />
+                  <input className="w-full rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Email" />
+                </div>
+                <textarea className="w-full min-h-32 rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Nội dung" />
+                <div className="flex justify-end">
+                  <Button>
+                    Gửi
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="bg-muted py-16">
