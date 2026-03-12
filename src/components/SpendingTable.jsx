@@ -1,41 +1,61 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import AddExpenseModal from './AddExpenseModal';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { db } from '../firebase';
-import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc } from 'firebase/firestore';
-import { toast } from 'react-hot-toast';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import AddExpenseModal from "./AddExpenseModal";
+import {
+  Edit3,
+  Trash2,
+  Plus,
+  Calculator,
+  X,
+  ChevronRight,
+  TrendingUp,
+  Receipt,
+  User,
+  CheckCircle2,
+  Clock,
+} from "lucide-react";
+import { db } from "../firebase";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { toast } from "react-hot-toast";
 import { formatVND } from "@/utils/formatVND";
 
 const SpendingTable = ({ group, currentUser }) => {
   const [expenses, setExpenses] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
-  const [participantsMap, setParticipantsMap] = useState({}); // { userId: {id, fullName, email, profile_img} }
-  const [memberMap, setMemberMap] = useState({}); // { userId: {id, fullName, email, profile_img} }
+  const [participantsMap, setParticipantsMap] = useState({});
+  const [memberMap, setMemberMap] = useState({});
   const [isResultOpen, setIsResultOpen] = useState(false);
 
   const fetchExpenses = useCallback(async () => {
     if (!group) return;
     try {
-      const expensesCollection = collection(db, 'expenses');
-      const q = query(expensesCollection, where('groupId', '==', group.id));
+      const expensesCollection = collection(db, "expenses");
+      const q = query(expensesCollection, where("groupId", "==", group.id));
       const expensesSnapshot = await getDocs(q);
-      const expensesList = expensesSnapshot.docs.map(docSnap => {
+      const expensesList = expensesSnapshot.docs.map((docSnap) => {
         const data = docSnap.data();
-        const date = data.date && data.date.toDate ? data.date.toDate() : new Date();
+        const date =
+          data.date && data.date.toDate ? data.date.toDate() : new Date();
         return { id: docSnap.id, ...data, date };
       });
-      setExpenses(expensesList);
+      setExpenses(expensesList.sort((a, b) => b.date - a.date));
     } catch (error) {
-      console.error("Error fetching expenses: ", error);
-      if (error.code === 'permission-denied') {
-        toast.error('Bạn không có quyền xem dữ liệu chi tiêu của nhóm này.');
+      if (error.code === "permission-denied") {
+        toast.error("Bạn không có quyền xem dữ liệu chi tiêu.");
       } else {
-        toast.error('Có lỗi xảy ra khi tải dữ liệu chi tiêu.');
+        toast.error("Có lỗi xảy ra khi tải dữ liệu chi tiêu.");
       }
     }
   }, [group]);
@@ -44,87 +64,94 @@ const SpendingTable = ({ group, currentUser }) => {
     fetchExpenses();
   }, [fetchExpenses]);
 
-  // Fetch group members' profiles for display in results
   useEffect(() => {
     const fetchMembers = async () => {
       if (!group?.id) return;
       try {
-        const groupDocRef = doc(db, 'groups', group.id);
+        const groupDocRef = doc(db, "groups", group.id);
         const groupSnap = await getDoc(groupDocRef);
-        const uids = groupSnap.exists() && Array.isArray(groupSnap.data().members) ? groupSnap.data().members : [];
+        const uids =
+          groupSnap.exists() && Array.isArray(groupSnap.data().members)
+            ? groupSnap.data().members
+            : [];
         const results = await Promise.all(
           uids.map(async (uid) => {
             try {
-              const userDocRef = doc(db, 'users', uid);
+              const userDocRef = doc(db, "users", uid);
               const userSnap = await getDoc(userDocRef);
               return userSnap.exists() ? { id: uid, ...userSnap.data() } : null;
             } catch (e) {
-              console.error('Error fetching member profile', e);
               return null;
             }
-          })
+          }),
         );
         const next = {};
-        results.filter(Boolean).forEach((u) => { next[u.id] = u; });
+        results.filter(Boolean).forEach((u) => {
+          next[u.id] = u;
+        });
         setMemberMap(next);
       } catch (e) {
-        console.error('Error fetching group members', e);
+        console.error("Error fetching group members", e);
       }
     };
     fetchMembers();
   }, [group]);
 
-  // Fetch unique participants' profiles for display in table cells
   useEffect(() => {
     const fetchParticipantsProfiles = async () => {
       try {
         const uniqueIds = new Set();
-        expenses.forEach(exp => {
-          (exp.participants || []).forEach(id => uniqueIds.add(id));
+        expenses.forEach((exp) => {
+          (exp.participants || []).forEach((id) => uniqueIds.add(id));
           if (exp.paidBy) uniqueIds.add(exp.paidBy);
         });
-        const idsToFetch = Array.from(uniqueIds).filter(id => !participantsMap[id]);
+        const idsToFetch = Array.from(uniqueIds).filter(
+          (id) => !participantsMap[id],
+        );
         if (idsToFetch.length === 0) return;
         const results = await Promise.all(
           idsToFetch.map(async (uid) => {
             try {
-              const userDocRef = doc(db, 'users', uid);
+              const userDocRef = doc(db, "users", uid);
               const userSnap = await getDoc(userDocRef);
               return userSnap.exists() ? { id: uid, ...userSnap.data() } : null;
             } catch (e) {
-              console.error('Error fetching user profile', e);
               return null;
             }
-          })
+          }),
         );
         const nextMap = { ...participantsMap };
-        results.filter(Boolean).forEach(user => {
+        results.filter(Boolean).forEach((user) => {
           nextMap[user.id] = user;
         });
         setParticipantsMap(nextMap);
       } catch (e) {
-        console.error('Error building participants map', e);
+        console.error("Error building participants map", e);
       }
     };
     if (expenses.length > 0) {
       fetchParticipantsProfiles();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenses]);
 
   const handleSaveExpense = async ({ name, price, participants, paidBy }) => {
     if (!currentUser || !group) {
-      toast.error("Không thể lưu chi tiêu: thiếu thông tin người dùng hoặc nhóm.");
+      toast.error("Thiếu thông tin người dùng hoặc nhóm.");
       return;
     }
 
     try {
       if (editingExpense) {
-        const expenseDoc = doc(db, 'expenses', editingExpense.id);
-        await updateDoc(expenseDoc, { name, price, participants: participants || [], paidBy: paidBy || currentUser.uid });
-        toast.success('Đã cập nhật chi tiêu.');
+        const expenseDoc = doc(db, "expenses", editingExpense.id);
+        await updateDoc(expenseDoc, {
+          name,
+          price,
+          participants: participants || [],
+          paidBy: paidBy || currentUser.uid,
+        });
+        toast.success("Đã cập nhật chi tiêu.");
       } else {
-        await addDoc(collection(db, 'expenses'), {
+        await addDoc(collection(db, "expenses"), {
           name,
           price,
           date: new Date(),
@@ -133,16 +160,15 @@ const SpendingTable = ({ group, currentUser }) => {
           paidBy: paidBy || currentUser.uid,
           participants: participants || [],
         });
-        toast.success('Đã thêm chi tiêu.');
+        toast.success("Đã thêm chi tiêu.");
       }
       setEditingExpense(null);
       fetchExpenses();
     } catch (error) {
-      console.error("Error saving expense: ", error);
-      if (error.code === 'permission-denied') {
-        toast.error('Bạn không có quyền thực hiện thao tác này.');
+      if (error.code === "permission-denied") {
+        toast.error("Bạn không có quyền này.");
       } else {
-        toast.error('Có lỗi xảy ra khi lưu chi tiêu.');
+        toast.error("Có lỗi xảy ra khi lưu chi tiêu.");
       }
     }
   };
@@ -154,204 +180,334 @@ const SpendingTable = ({ group, currentUser }) => {
 
   const handleDelete = async (id) => {
     try {
-      const expenseDoc = doc(db, 'expenses', id);
+      const expenseDoc = doc(db, "expenses", id);
       await deleteDoc(expenseDoc);
-      toast.success('Đã xóa chi tiêu.');
+      toast.success("Đã xóa chi tiêu.");
       fetchExpenses();
     } catch (error) {
-      console.error("Error deleting expense: ", error);
-      if (error.code === 'permission-denied') {
-        toast.error('Bạn không có quyền xóa chi tiêu này.');
-      } else {
-        toast.error('Có lỗi xảy ra khi xóa chi tiêu.');
-      }
+      toast.error("Xóa thất bại.");
     }
   };
 
   const canEditDelete = (expense) => {
     if (!currentUser || !group) return false;
-    return expense.createdBy === currentUser.uid || group.creatorId === currentUser.uid;
+    return (
+      expense.createdBy === currentUser.uid ||
+      group.creatorId === currentUser.uid
+    );
   };
 
   const renderParticipantsCell = (expense) => {
     const ids = expense.participants || [];
-    if (ids.length === 0) return <span className="text-gray-500">-</span>;
+    if (ids.length === 0) return <span className="text-slate-400">-</span>;
+
+    const visibleIds = ids.slice(0, 3);
+    const hiddenCount = ids.length - 3;
+
     return (
-      <div className="flex flex-wrap gap-2">
-        {ids.map((id) => {
+      <div className="flex -space-x-2">
+        {visibleIds.map((id) => {
           const user = participantsMap[id];
-          const name = user?.fullName || user?.email || 'Ẩn danh';
-          const avatar = user?.profile_img;
           return (
-            <div key={id} className="flex items-center space-x-2 bg-gray-100 rounded-full px-2 py-1">
-              {avatar ? (
-                <img src={avatar} alt={name} className="w-6 h-6 rounded-full" />
+            <div
+              key={id}
+              className="w-8 h-8 rounded-xl border-2 border-white bg-slate-100 flex items-center justify-center overflow-hidden"
+              title={user?.fullName || user?.email}
+            >
+              {user?.profile_img ? (
+                <img
+                  src={user.profile_img}
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <div className="w-6 h-6 rounded-full bg-teal-500 text-white text-xs flex items-center justify-center">
-                  {name.charAt(0).toUpperCase()}
-                </div>
+                <User className="w-4 h-4 text-slate-400" />
               )}
-              <span className="text-sm">{name}</span>
             </div>
           );
         })}
+        {hiddenCount > 0 && (
+          <div className="w-8 h-8 rounded-xl border-2 border-white bg-emerald-500 text-white flex items-center justify-center text-[10px] font-black">
+            +{hiddenCount}
+          </div>
+        )}
       </div>
     );
   };
 
   const computeResults = () => {
-    const paidBy = {}; // userId -> total paid
-    const shareBy = {}; // userId -> total share
+    const paidBy = {};
+    const shareBy = {};
 
-    // initialize with group members to ensure all appear
     Object.keys(memberMap).forEach((uid) => {
       paidBy[uid] = 0;
       shareBy[uid] = 0;
     });
 
     expenses.forEach((exp) => {
-      const participants = Array.isArray(exp.participants) && exp.participants.length > 0 ? exp.participants : [];
+      const participants =
+        Array.isArray(exp.participants) && exp.participants.length > 0
+          ? exp.participants
+          : [];
       const count = participants.length || 1;
       const perHead = Number(exp.price || 0) / count;
-      // paidBy field overrides createdBy
       const payer = exp.paidBy || exp.createdBy;
       if (payer) {
         paidBy[payer] = (paidBy[payer] || 0) + Number(exp.price || 0);
       }
-      // each participant owes their share
       participants.forEach((uid) => {
         shareBy[uid] = (shareBy[uid] || 0) + perHead;
       });
     });
 
-    const results = Object.keys({ ...memberMap, ...paidBy, ...shareBy }).map((uid) => {
-      const user = memberMap[uid];
-      const paid = +(paidBy[uid] || 0);
-      const share = +(shareBy[uid] || 0);
-      const net = +(paid - share);
-      return { uid, user, paid, share, net };
-    });
+    const results = Object.keys({ ...memberMap, ...paidBy, ...shareBy }).map(
+      (uid) => {
+        const user = memberMap[uid];
+        const paid = +(paidBy[uid] || 0);
+        const share = +(shareBy[uid] || 0);
+        const net = +(paid - share);
+        return { uid, user, paid, share, net };
+      },
+    );
 
-    // sort: highest absolute net first
     results.sort((a, b) => Math.abs(b.net) - Math.abs(a.net));
     return results;
   };
 
   const results = isResultOpen ? computeResults() : [];
 
-  return (
-    <div>
-      <div className="mb-4 flex items-center gap-2">
-        <Button
-          onClick={() => {
-            setEditingExpense(null);
-            setIsModalOpen(true);
-          }}
-        >
-          Thêm chi tiêu
-        </Button>
-        {currentUser && group && currentUser.uid === group.creatorId && (
-          <Button variant="secondary" onClick={() => setIsResultOpen(true)}>
-            Kết quả tính
-          </Button>
-        )}
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Tên</TableHead>
-            <TableHead>Giá</TableHead>
-            <TableHead>Ngày</TableHead>
-            <TableHead>Thành viên</TableHead>
-            <TableHead>Thao tác</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {expenses.map(expense => (
-            <TableRow key={expense.id}>
-              <TableCell className="font-medium">{expense.name}</TableCell>
-              <TableCell>{formatVND(expense.price)}</TableCell>
-              <TableCell>{expense.date.toLocaleDateString()}</TableCell>
-              <TableCell>{renderParticipantsCell(expense)}</TableCell>
-              <TableCell>
-                {canEditDelete(expense) ? (
-                  <div className="flex items-center gap-2">
-                    <Button size="icon" variant="outline" onClick={() => handleEdit(expense)} title="Sửa">
-                      <FaEdit />
-                    </Button>
-                    <Button size="icon" variant="destructive" onClick={() => handleDelete(expense.id)} title="Xóa">
-                      <FaTrash />
-                    </Button>
-                  </div>
-                ) : (
-                  <span className="text-muted-foreground text-sm">-</span>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell className="text-right font-bold" colSpan={1}>Tổng cộng</TableCell>
-            <TableCell className="font-bold">
-              {formatVND(expenses.reduce((total, exp) => total + parseFloat(exp.price || 0), 0))}
-            </TableCell>
-            <TableCell colSpan={3}></TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
-
-      {/* Results Modal */}
+  const resultsModal = createPortal(
+    <AnimatePresence>
       {isResultOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-indigo-600">Kết quả tính theo thành viên</CardTitle>
-              <Button variant="ghost" onClick={() => setIsResultOpen(false)} aria-label="Đóng">✕</Button>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-left">Thành viên</TableHead>
-                    <TableHead className="text-right">Đã trả</TableHead>
-                    <TableHead className="text-right">Phần chia</TableHead>
-                    <TableHead className="text-right">Còn/Thừa</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {results.map((row) => {
-                    const name = row.user?.fullName || row.user?.email || row.uid;
-                    const avatar = row.user?.profile_img;
-                    return (
-                      <TableRow key={row.uid}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            {avatar ? (
-                              <img src={avatar} alt={name} className="w-8 h-8 rounded-full" />
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-teal-500 text-white text-sm flex items-center justify-center">
-                                {name.charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            <span>{name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">{formatVND(row.paid)}</TableCell>
-                        <TableCell className="text-right">{formatVND(row.share)}</TableCell>
-                        <TableCell className={`text-right ${row.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatVND(row.net)}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-              <div className="mt-4 text-sm text-muted-foreground">
-                Ghi chú: "Đã trả" tính theo trường người trả. "Phần chia" = tổng (chi tiêu / số người tham gia). "Còn/Thừa" = Đã trả - Phần chia.
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xl flex items-center justify-center z-[9999] p-4"
+          onClick={() => setIsResultOpen(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.95, y: 30, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.95, y: 30, opacity: 0 }}
+            className="bg-white/95 backdrop-blur-3xl p-8 rounded-[40px] shadow-2xl border border-white/60 max-w-2xl w-full max-h-[85vh] flex flex-col relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-emerald-400/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <Calculator className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-800 tracking-tight">
+                      Quyết toán chi phí
+                    </h2>
+                    <p className="text-slate-500 text-sm font-medium">
+                      Chi tiết nợ/thặng dư
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsResultOpen(false)}
+                  className="p-2 rounded-full hover:bg-white/50 transition-colors"
+                >
+                  <X className="w-6 h-6 text-slate-400" />
+                </button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+
+              <div className="flex-1 overflow-y-auto no-scrollbar space-y-3">
+                {results.map((row) => {
+                  const name =
+                    row.user?.fullName || row.user?.email || "Thành viên";
+                  return (
+                    <div
+                      key={row.uid}
+                      className="flex items-center justify-between p-4 bg-white/50 border border-white rounded-[24px]"
+                    >
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={row.user?.profile_img}
+                          className="w-10 h-10 rounded-xl bg-slate-100"
+                        />
+                        <div>
+                          <p className="font-black text-slate-800 text-sm uppercase">
+                            {name}
+                          </p>
+                          <p className="text-[10px] font-bold text-slate-400">
+                            Đã trả: {formatVND(row.paid)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p
+                          className={`font-black text-sm ${row.net >= 0 ? "text-emerald-600" : "text-red-500"}`}
+                        >
+                          {row.net >= 0 ? "+" : ""}
+                          {formatVND(row.net)}
+                        </p>
+                        <p className="text-[10px] font-bold text-slate-400">
+                          Net balance
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 italic text-[10px] text-emerald-700 font-medium">
+                Ghi chú: Giá trị dương (+) là số tiền bạn sẽ nhận lại, giá trị
+                âm (-) là số tiền bạn cần trả thêm vào quỹ.
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       )}
+    </AnimatePresence>,
+    document.body,
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Table Header Controls */}
+      <div className="bg-white/80 backdrop-blur-xl p-4 rounded-[32px] border border-white/60 shadow-sm flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-emerald-500" />
+          </div>
+          <div>
+            <h3 className="font-black text-slate-800 text-sm tracking-tight leading-none">
+              Bảng chi tiêu
+            </h3>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+              Tổng {expenses.length} khoản chi
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {currentUser && group && currentUser.uid === group.creatorId && (
+            <button
+              onClick={() => setIsResultOpen(true)}
+              className="btn-liquid-secondary h-12 px-6 rounded-2xl flex items-center gap-2 hover:-translate-y-0.5"
+            >
+              <Calculator className="w-4 h-4" />
+              <span className="text-xs font-black">QUYẾT TOÁN</span>
+            </button>
+          )}
+          <button
+            onClick={() => {
+              setEditingExpense(null);
+              setIsModalOpen(true);
+            }}
+            className="btn-liquid h-12 px-6 rounded-2xl flex items-center gap-2 group hover:-translate-y-0.5"
+          >
+            <div className="btn-liquid-shine" />
+            <Plus className="w-4 h-4 relative z-10" />
+            <span className="text-xs font-black relative z-10">THÊM MỚI</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Main Table Content */}
+      <div className="bg-white/60 backdrop-blur-xl rounded-[40px] border border-white/60 shadow-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-white">
+                  Nội dung
+                </th>
+                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-white">
+                  Số tiền
+                </th>
+                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-white">
+                  Ngày
+                </th>
+                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-white">
+                  Thành viên
+                </th>
+                <th className="p-6 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-white text-right">
+                  Thao tác
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/40">
+              {expenses.map((expense) => (
+                <tr
+                  key={expense.id}
+                  className="hover:bg-white/40 transition-colors group"
+                >
+                  <td className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-50 flex items-center justify-center">
+                        <Receipt className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <span className="font-bold text-slate-700">
+                        {expense.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="p-6">
+                    <span className="font-black text-slate-800">
+                      {formatVND(expense.price)}
+                    </span>
+                  </td>
+                  <td className="p-6 text-slate-500 font-bold text-xs uppercase">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-slate-300" />
+                      {expense.date.toLocaleDateString("vi-VN")}
+                    </div>
+                  </td>
+                  <td className="p-6">{renderParticipantsCell(expense)}</td>
+                  <td className="p-6 text-right">
+                    {canEditDelete(expense) ? (
+                      <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleEdit(expense)}
+                          className="w-10 h-10 bg-white/50 hover:bg-emerald-500 text-slate-400 hover:text-white rounded-xl flex items-center justify-center border border-white shadow-sm transition-all"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(expense.id)}
+                          className="w-10 h-10 bg-white/50 hover:bg-red-500 text-slate-400 hover:text-white rounded-xl flex items-center justify-center border border-white shadow-sm transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-slate-300">-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-emerald-50/50">
+                <td
+                  colSpan={1}
+                  className="p-6 font-black text-emerald-800 text-sm uppercase tracking-tight"
+                >
+                  Tổng cộng
+                </td>
+                <td className="p-6 font-black text-emerald-600 text-lg">
+                  {formatVND(
+                    expenses.reduce(
+                      (total, exp) => total + parseFloat(exp.price || 0),
+                      0,
+                    ),
+                  )}
+                </td>
+                <td colSpan={3} className="p-6"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      {resultsModal}
 
       <AddExpenseModal
         isOpen={isModalOpen}

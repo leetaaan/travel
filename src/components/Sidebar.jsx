@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc, onSnapshot, query, where, arrayUnion } from 'firebase/firestore';
-import { useTheme } from '../contexts/ThemeContext';
-import CreateGroupModal from './CreateGroupModal';
+import React, { useState, useEffect } from "react";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  where,
+  arrayUnion,
+} from "firebase/firestore";
+import { useTheme } from "../contexts/ThemeContext";
+import CreateGroupModal from "./CreateGroupModal";
 
 const Sidebar = ({ onSelectGroup, tripId, userId }) => {
   const [groups, setGroups] = useState([]);
@@ -12,7 +19,10 @@ const Sidebar = ({ onSelectGroup, tripId, userId }) => {
   useEffect(() => {
     if (userId) {
       // Query groups where the 'members' array contains the current userId
-      const q = query(collection(db, 'groups'), where('members', 'array-contains', userId));
+      const q = query(
+        collection(db, "groups"),
+        where("members", "array-contains", userId),
+      );
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const groupsData = [];
         querySnapshot.forEach((doc) => {
@@ -33,80 +43,123 @@ const Sidebar = ({ onSelectGroup, tripId, userId }) => {
         members: [userId], // Initialize members array with the creator
         createdAt: new Date(),
       };
-      const docRef = await addDoc(collection(db, 'groups'), newGroup);
+      const docRef = await addDoc(collection(db, "groups"), newGroup);
       onSelectGroup({ ...newGroup, id: docRef.id });
     }
   };
 
   return (
-    <div className="bg-gradient-to-b from-muted to-background border-r border-border p-6 h-full w-72 shadow-sm transition-colors duration-300">
-      <div className="mb-6">
-        <button 
-          onClick={() => onSelectGroup(null)} 
-          className="flex items-center space-x-3 text-primary font-semibold text-lg hover:text-primary/80 hover:bg-accent rounded-lg p-3 w-full transition-all duration-200 group"
+    <div className="flex flex-col h-full bg-transparent p-6 overflow-hidden">
+      <div className="mb-8">
+        <button
+          onClick={() => onSelectGroup(null)}
+          className="btn-liquid btn-liquid-secondary p-4 w-full group"
         >
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"></path>
+          <div className="btn-liquid-shine" />
+
+          <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 relative z-10">
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m0 0L9 7"
+              ></path>
             </svg>
           </div>
-          <span>Bản đồ</span>
+          <span className="relative z-10 transition-colors group-hover:text-emerald-900">
+            Bản đồ du lịch
+          </span>
         </button>
       </div>
-      
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-foreground mb-4 flex items-center">
-          <svg className="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-          </svg>
+
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center">
+          <span className="w-8 h-[1px] bg-slate-200 mr-2"></span>
           Danh sách nhóm
+          <span className="w-8 h-[1px] bg-slate-200 ml-2"></span>
         </h2>
-        
-        {groups.length > 0 ? (
-          <ul className="space-y-2">
-            {groups.map(group => (
-              <li key={group.id}>
-                <button 
-                  onClick={() => onSelectGroup(group)} 
-                  className="flex items-center space-x-3 w-full text-left p-3 rounded-lg hover:bg-accent transition-all duration-200 group border border-transparent hover:border-border"
+
+        <div className="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-2">
+          {groups.length > 0 ? (
+            groups.map((group) => (
+              <button
+                key={group.id}
+                onClick={() => onSelectGroup(group)}
+                className="flex items-center space-x-4 w-full text-left p-4 rounded-2xl hover:bg-white/60 transition-all duration-300 group border border-transparent hover:border-white/80 hover:shadow-xl hover:shadow-black/5"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-lg font-black group-hover:scale-110 transition-transform shadow-lg shadow-blue-500/20">
+                  {group.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-slate-700 font-bold truncate group-hover:text-primary transition-colors">
+                    {group.name}
+                  </p>
+                  <div className="flex items-center mt-0.5">
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                      {group.members?.length || 0} thành viên
+                    </p>
+                  </div>
+                </div>
+                <svg
+                  className="w-5 h-5 text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center text-white text-sm font-semibold group-hover:scale-110 transition-transform">
-                    {group.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-foreground font-medium truncate">{group.name}</p>
-                    <p className="text-xs text-muted-foreground">{group.members?.length || 0} thành viên</p>
-                  </div>
-                  <svg className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-                  </svg>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-center py-8">
-            <svg className="w-12 h-12 text-muted-foreground mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <p className="text-muted-foreground text-sm">Chưa có nhóm nào</p>
-            <p className="text-muted-foreground/70 text-xs mt-1">Tạo nhóm đầu tiên của bạn</p>
-          </div>
-        )}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M9 5l7 7-7 7"
+                  ></path>
+                </svg>
+              </button>
+            ))
+          ) : (
+            <div className="text-center py-12 bg-white/20 rounded-3xl border border-dashed border-slate-300">
+              <div className="w-16 h-16 bg-white/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-white">
+                <svg
+                  className="w-8 h-8 text-slate-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  ></path>
+                </svg>
+              </div>
+              <p className="text-slate-500 font-bold text-sm">Chưa có nhóm</p>
+              <p className="text-slate-400 text-[10px] mt-1 uppercase tracking-widest">
+                Tạo nhóm đầu tiên
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-      
-      <div className="mt-auto">
+
+      <div className="mt-6 pt-6 border-t border-white/40">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl p-4 transition-all duration-200 font-semibold shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
+          className="btn-liquid w-full bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/30 group"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-          <span>Tạo nhóm mới</span>
+          <div className="btn-liquid-shine" />
+          <span className="text-xl relative z-10 transition-transform group-hover:scale-105">
+            Tạo nhóm mới
+          </span>
         </button>
       </div>
-      
+
       <CreateGroupModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

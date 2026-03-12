@@ -6,11 +6,28 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == userId;
 
-      // Friends subcollection: cho phép chủ user hoặc friend ghi vào
+      // Friends subcollection: Bạn bè có thể xem, chủ sở hữu có quyền ghi
       match /friends/{friendId} {
-        allow read, write: if request.auth != null && (
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && (
           request.auth.uid == userId || request.auth.uid == friendId
         );
+      }
+
+      // Notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && (
+          request.auth.uid == userId || 
+          (resource == null && request.resource.data.type == "friendRequest" && request.auth.uid == request.resource.data.senderId) ||
+          (resource != null && (request.auth.uid == resource.data.senderId || request.auth.uid == resource.data.receiverId))
+        );
+      }
+
+      // Itineraries subcollection: cho phép đọc công khai (để lấy count), chỉ chủ có quyền ghi
+      match /itineraries/{itineraryId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && request.auth.uid == userId;
       }
     }
 

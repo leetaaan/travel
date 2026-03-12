@@ -1,8 +1,14 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Wallet,
   MapPin,
@@ -14,20 +20,27 @@ import {
   Menu,
   ArrowRight,
   CheckCircle,
-} from "lucide-react"
-import { motion } from "framer-motion"
-import { Link } from "react-router-dom"
-import { useState } from "react"
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Autoplay, Pagination } from "swiper/modules"
-import "swiper/css"
-import "swiper/css/pagination"
+  Play,
+  Facebook,
+  Instagram,
+  Twitter,
+  Github,
+  Mail,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import { LiquidButton } from "@/components/ui/LiquidButton";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, ease: "easeOut" },
-}
+};
 
 const staggerContainer = {
   animate: {
@@ -35,31 +48,67 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-}
+};
 
 const scaleOnHover = {
   whileHover: { scale: 1.05 },
   transition: { type: "spring", stiffness: 300 },
-}
+};
 
 export default function LandingPage() {
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background no-scrollbar">
+      {/* Liquid Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            x: [0, 100, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.2, 1],
+            rotate: [0, 90, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] bg-emerald-200/30 blur-[120px] rounded-full"
+        />
+        <motion.div
+          animate={{
+            x: [0, -80, 0],
+            y: [0, 120, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          className="absolute top-[20%] -right-[10%] w-[35%] h-[45%] bg-primary/20 blur-[100px] rounded-[40%]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-0 left-[15%] w-[50%] h-[30%] bg-secondary/30 blur-[140px] rounded-full"
+        />
+      </div>
+
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
+        className="border-b border-black/5 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
+            <motion.div
+              className="flex items-center space-x-2"
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                 <Wallet className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">TravelBudget</span>
+              <span className="text-xl font-bold text-foreground">
+                PlanGo
+              </span>
             </motion.div>
 
             <nav className="hidden md:flex items-center space-x-8">
@@ -72,13 +121,20 @@ export default function LandingPage() {
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(e) => {
-                    e.preventDefault()
-                    const el = document.getElementById(link.id)
+                    e.preventDefault();
+                    const el = document.getElementById(link.id);
                     if (el) {
-                      const header = document.querySelector('header')
-                      const headerHeight = (header && header.offsetHeight) ? header.offsetHeight : 64
-                      const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 8
-                      window.scrollTo({ top: y, behavior: 'smooth' })
+                      const header = document.querySelector("header");
+                      const headerHeight =
+                        header && header.offsetHeight
+                          ? header.offsetHeight
+                          : 64;
+                      const y =
+                        el.getBoundingClientRect().top +
+                        window.pageYOffset -
+                        headerHeight -
+                        8;
+                      window.scrollTo({ top: y, behavior: "smooth" });
                     }
                   }}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -93,9 +149,18 @@ export default function LandingPage() {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="inline-flex">
-                  <Button size="sm">Bắt đầu miễn phí</Button>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex"
+                >
+                  <LiquidButton className="h-10 px-6 text-sm">
+                    Bắt đầu miễn phí
+                  </LiquidButton>
                 </Link>
               </motion.div>
               <Button
@@ -111,9 +176,12 @@ export default function LandingPage() {
         </div>
         {/* Mobile dropdown */}
         <motion.div
-          className="md:hidden border-t border-border bg-background"
+          className="md:hidden border-t border-black/5 bg-background"
           initial={false}
-          animate={{ height: mobileOpen ? "auto" : 0, opacity: mobileOpen ? 1 : 0 }}
+          animate={{
+            height: mobileOpen ? "auto" : 0,
+            opacity: mobileOpen ? 1 : 0,
+          }}
           style={{ overflow: "hidden" }}
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-2">
@@ -127,15 +195,20 @@ export default function LandingPage() {
                 href={`#${link.id}`}
                 className="block py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                 onClick={(e) => {
-                  e.preventDefault()
-                  const el = document.getElementById(link.id)
+                  e.preventDefault();
+                  const el = document.getElementById(link.id);
                   if (el) {
-                    const header = document.querySelector('header')
-                    const headerHeight = (header && header.offsetHeight) ? header.offsetHeight : 64
-                    const y = el.getBoundingClientRect().top + window.pageYOffset - headerHeight - 8
-                    window.scrollTo({ top: y, behavior: 'smooth' })
+                    const header = document.querySelector("header");
+                    const headerHeight =
+                      header && header.offsetHeight ? header.offsetHeight : 64;
+                    const y =
+                      el.getBoundingClientRect().top +
+                      window.pageYOffset -
+                      headerHeight -
+                      8;
+                    window.scrollTo({ top: y, behavior: "smooth" });
                   }
-                  setMobileOpen(false)
+                  setMobileOpen(false);
                 }}
               >
                 {link.label}
@@ -146,41 +219,35 @@ export default function LandingPage() {
       </motion.header>
 
       {/* Hero Section */}
-      <section className="py-20 lg:py-32">
+      <section className="py-12 lg:py-24 overflow-hidden relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div
-              className="space-y-8"
+              className="space-y-10 relative z-10"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <div className="space-y-4">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Badge variant="secondary" className="w-fit">
-                    🎉 Mới ra mắt - Miễn phí 30 ngày đầu
-                  </Badge>
-                </motion.div>
+              <div className="space-y-6">
                 <motion.h1
-                  className="text-4xl lg:text-6xl font-bold text-foreground text-balance"
+                  className="text-[40px] lg:text-[72px] font-extrabold tracking-tight text-foreground leading-[1.1]"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
                 >
-                  Quản lý chi tiêu, lên kế hoạch du lịch <span className="text-primary">dễ dàng</span>
+                  Quản lý chi tiêu nhóm{" "}
+                  <span className="text-emerald-700">dễ dàng</span> và minh
+                  bạch.
                 </motion.h1>
                 <motion.p
-                  className="text-xl text-muted-foreground text-pretty max-w-2xl"
+                  className="text-lg lg:text-xl text-slate-500/90 leading-relaxed max-w-2xl"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
                 >
-                  Theo dõi chi tiêu thông minh, lập ngân sách hiệu quả và lên kế hoạch cho những chuyến du lịch hoàn
-                  hảo. Tất cả trong một ứng dụng đơn giản và dễ sử dụng.
+                  Đừng để tiền bạc làm ảnh hưởng đến tình bạn. PlanGo giúp
+                  bạn theo dõi chi tiêu chung, chia hóa đơn công bằng và giải
+                  quyết nợ nần chỉ trong vài giây.
                 </motion.p>
               </div>
 
@@ -190,70 +257,113 @@ export default function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <Link to="/login">
-                    <Button size="lg" className="text-lg px-8">
+                    <LiquidButton className="h-16 px-10 text-lg">
                       Bắt đầu miễn phí
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                      <ArrowRight className="h-5 w-5" />
+                    </LiquidButton>
                   </Link>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
-                    Tìm hiểu thêm
-                  </Button>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <LiquidButton className="h-16 px-10 text-lg bg-white/20 backdrop-blur-xl border border-white/40 text-foreground hover:bg-white/40 shadow-lg shadow-black/5">
+                    Xem demo
+                    <div className="flex items-center justify-center w-7 h-7 rounded-full border-2 border-foreground bg-foreground/5 shrink-0">
+                      <Play className="h-3 w-3 fill-current ml-0.5" />
+                    </div>
+                  </LiquidButton>
                 </motion.div>
               </motion.div>
 
               <motion.div
-                className="flex items-center space-x-8 pt-4"
-                variants={staggerContainer}
-                initial="initial"
-                animate="animate"
+                className="flex items-center gap-4 pt-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
               >
-                {["Miễn phí 30 ngày", "Không cần thẻ tín dụng", "Hủy bất cứ lúc nào"].map((text, index) => (
-                  <motion.div key={text} className="flex items-center space-x-2" variants={fadeInUp}>
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    <span className="text-sm text-muted-foreground">{text}</span>
-                  </motion.div>
-                ))}
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-11 w-11 rounded-full border-4 border-white/80 overflow-hidden bg-slate-100 shadow-md backdrop-blur-sm"
+                    >
+                      <img
+                        src={`https://i.pravatar.cc/100?u=${i + 20}`}
+                        alt="User"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm font-medium text-slate-500 italic">
+                  Được tin dùng bởi hơn{" "}
+                  <span className="text-slate-900 font-bold not-italic">
+                    10,000+
+                  </span>{" "}
+                  nhóm bạn trẻ.
+                </p>
               </motion.div>
             </motion.div>
 
             <motion.div
-              className="relative"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
+              className="relative lg:ml-auto w-full max-w-[600px]"
+              initial={{ opacity: 0, scale: 0.9, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="relative z-10">
-                <motion.img
-                  src="/modern-travel-planning-app-interface-showing-expen.png"
-                  alt="TravelBudget App Interface"
-                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl"
-                  whileHover={{ scale: 1.05, rotateY: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+              {/* Liquid Glass Container */}
+              <div className="bg-white/10 rounded-[64px] p-8 lg:p-20 relative overflow-hidden flex justify-center items-center backdrop-blur-2xl border border-white/30 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)]">
+                {/* Internal morphing glow */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 180, 0],
+                  }}
+                  transition={{
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  className="absolute inset-0 bg-gradient-to-br from-primary/10 via-emerald-300/10 to-transparent blur-3xl"
                 />
+
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/20 to-transparent z-0" />
+
+                {/* Phone Mockup with Glass Shine */}
+                <div className="relative w-[280px] lg:w-[320px] aspect-[1/2] rounded-[48px] bg-slate-950 p-3 shadow-2xl shadow-emerald-900/10 z-10 group">
+                  {/* Shine effect */}
+                  <div className="absolute inset-x-0 top-0 h-full w-full bg-gradient-to-tr from-transparent via-white/5 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out pointer-events-none z-30" />
+
+                  <div className="absolute top-0 inset-x-0 h-8 z-20 flex justify-center items-center">
+                    <div className="w-20 h-5 rounded-b-2xl bg-slate-950" />
+                  </div>
+                  <div className="w-full h-full bg-white rounded-[40px] overflow-hidden relative border border-white/10">
+                    <img
+                      src="/modern-travel-planning-app-interface-showing-expen.png"
+                      alt="App interface"
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Fake overlay for better look */}
+                    <div className="absolute inset-0 bg-white/5 pointer-events-none" />
+                  </div>
+                </div>
               </div>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl transform scale-110"
-                animate={{
-                  scale: [1.1, 1.2, 1.1],
-                  opacity: [0.3, 0.5, 0.3],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Number.POSITIVE_INFINITY,
-                  ease: "easeInOut",
-                }}
-              />
+
+              {/* Decorative elements */}
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-100 rounded-full blur-3xl -z-10 opacity-50" />
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-muted/30 scroll-mt-24">
+      <section id="features" className="py-20 bg-white/40 scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center space-y-4 mb-16"
@@ -262,15 +372,12 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge variant="outline" className="w-fit mx-auto">
-              Tính năng nổi bật
-            </Badge>
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">
               Mọi thứ bạn cần cho chuyến du lịch hoàn hảo
             </h2>
             <p className="text-xl text-muted-foreground text-pretty max-w-3xl mx-auto">
-              Từ việc theo dõi chi tiêu hàng ngày đến lập kế hoạch chi tiết cho chuyến du lịch, chúng tôi có tất cả
-              những gì bạn cần.
+              Từ việc theo dõi chi tiêu hàng ngày đến lập kế hoạch chi tiết cho
+              chuyến du lịch, chúng tôi có tất cả những gì bạn cần.
             </p>
           </motion.div>
 
@@ -329,17 +436,23 @@ export default function LandingPage() {
                 },
               ].map((feature) => (
                 <SwiperSlide key={feature.title}>
-                  <Card className="border-border hover:shadow-lg transition-shadow h-full">
+                  <Card className="border-white/50 bg-white/40 backdrop-blur-md rounded-[32px] hover:shadow-2xl hover:border-primary/30 transition-all duration-500 h-full shadow-sm border">
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
-                          <feature.icon className={`h-6 w-6 ${feature.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === "primary" ? "bg-primary/10" : "bg-secondary/10"}`}
+                        >
+                          <feature.icon
+                            className={`h-6 w-6 ${feature.color === "primary" ? "text-primary" : "text-secondary"}`}
+                          />
                         </div>
                         <CardTitle>{feature.title}</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-base">{feature.description}</CardDescription>
+                      <CardDescription className="text-base">
+                        {feature.description}
+                      </CardDescription>
                     </CardContent>
                   </Card>
                 </SwiperSlide>
@@ -399,19 +512,29 @@ export default function LandingPage() {
                 color: "secondary",
               },
             ].map((feature, index) => (
-              <motion.div key={feature.title} variants={fadeInUp}>
-                <motion.div {...scaleOnHover}>
-                  <Card className="border-border hover:shadow-lg transition-shadow h-full">
+              <motion.div
+                key={feature.title}
+                variants={fadeInUp}
+                className="h-full"
+              >
+                <motion.div {...scaleOnHover} className="h-full">
+                  <Card className="border-white/50 bg-white/40 backdrop-blur-md rounded-[32px] hover:shadow-2xl hover:border-primary/30 transition-all duration-500 h-full shadow-sm border">
                     <CardHeader>
                       <div className="flex items-center space-x-3">
-                        <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'}`}>
-                          <feature.icon className={`h-6 w-6 ${feature.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-lg ${feature.color === "primary" ? "bg-primary/10" : "bg-secondary/10"}`}
+                        >
+                          <feature.icon
+                            className={`h-6 w-6 ${feature.color === "primary" ? "text-primary" : "text-secondary"}`}
+                          />
                         </div>
                         <CardTitle>{feature.title}</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-base">{feature.description}</CardDescription>
+                      <CardDescription className="text-base">
+                        {feature.description}
+                      </CardDescription>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -422,7 +545,7 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 scroll-mt-24">
+      <section id="testimonials" className="py-20 bg-transparent scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center space-y-4 mb-16"
@@ -431,9 +554,6 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge variant="outline" className="w-fit mx-auto">
-              Khách hàng nói gì
-            </Badge>
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">
               Được tin tưởng bởi hàng nghìn người dùng
             </h2>
@@ -476,21 +596,36 @@ export default function LandingPage() {
                 },
               ].map((testimonial) => (
                 <SwiperSlide key={testimonial.name}>
-                  <Card className="border-border h-full">
+                  <Card className="border-white/50 bg-white/40 backdrop-blur-md rounded-[32px] hover:shadow-2xl hover:border-primary/30 transition-all duration-500 h-full shadow-sm border">
                     <CardContent className="pt-6">
                       <div className="flex items-center space-x-1 mb-4">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                          <Star
+                            key={i}
+                            className="h-4 w-4 fill-primary text-primary"
+                          />
                         ))}
                       </div>
-                      <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                      <p className="text-muted-foreground mb-4">
+                        "{testimonial.content}"
+                      </p>
                       <div className="flex items-center space-x-3">
-                        <div className={`h-10 w-10 rounded-full ${testimonial.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'} flex items-center justify-center`}>
-                          <span className={`text-sm font-medium ${testimonial.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>{testimonial.avatar}</span>
+                        <div
+                          className={`h-10 w-10 rounded-full ${testimonial.color === "primary" ? "bg-primary/10" : "bg-secondary/10"} flex items-center justify-center`}
+                        >
+                          <span
+                            className={`text-sm font-medium ${testimonial.color === "primary" ? "text-primary" : "text-secondary"}`}
+                          >
+                            {testimonial.avatar}
+                          </span>
                         </div>
                         <div>
-                          <p className="font-medium text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                          <p className="font-medium text-foreground">
+                            {testimonial.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {testimonial.role}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -534,23 +669,42 @@ export default function LandingPage() {
                 color: "primary",
               },
             ].map((testimonial, index) => (
-              <motion.div key={testimonial.name} variants={fadeInUp}>
-                <motion.div {...scaleOnHover}>
-                  <Card className="border-border h-full">
+              <motion.div
+                key={testimonial.name}
+                variants={fadeInUp}
+                className="h-full"
+              >
+                <motion.div {...scaleOnHover} className="h-full">
+                  <Card className="border-white/50 bg-white/40 backdrop-blur-md rounded-[32px] hover:shadow-2xl hover:border-primary/30 transition-all duration-500 h-full shadow-sm border">
                     <CardContent className="pt-6">
                       <div className="flex items-center space-x-1 mb-4">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                          <Star
+                            key={i}
+                            className="h-4 w-4 fill-primary text-primary"
+                          />
                         ))}
                       </div>
-                      <p className="text-muted-foreground mb-4">"{testimonial.content}"</p>
+                      <p className="text-muted-foreground mb-4">
+                        "{testimonial.content}"
+                      </p>
                       <div className="flex items-center space-x-3">
-                        <div className={`h-10 w-10 rounded-full ${testimonial.color === 'primary' ? 'bg-primary/10' : 'bg-secondary/10'} flex items-center justify-center`}>
-                          <span className={`text-sm font-medium ${testimonial.color === 'primary' ? 'text-primary' : 'text-secondary'}`}>{testimonial.avatar}</span>
+                        <div
+                          className={`h-10 w-10 rounded-full ${testimonial.color === "primary" ? "bg-primary/10" : "bg-secondary/10"} flex items-center justify-center`}
+                        >
+                          <span
+                            className={`text-sm font-medium ${testimonial.color === "primary" ? "text-primary" : "text-secondary"}`}
+                          >
+                            {testimonial.avatar}
+                          </span>
                         </div>
                         <div>
-                          <p className="font-medium text-foreground">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                          <p className="font-medium text-foreground">
+                            {testimonial.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {testimonial.role}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -582,21 +736,31 @@ export default function LandingPage() {
               Sẵn sàng cho chuyến du lịch tiếp theo?
             </h2>
             <p className="text-xl text-primary-foreground/80 text-pretty max-w-2xl mx-auto">
-              Tham gia cùng hàng nghìn người dùng đã tin tưởng TravelBudget để quản lý chi tiêu và lên kế hoạch du lịch
-              thông minh.
+              Tham gia cùng hàng nghìn người dùng đã tin tưởng PlanGo để
+              quản lý chi tiêu và lên kế hoạch du lịch thông minh.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" variant="secondary" className="text-lg px-8">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-lg px-8 rounded-full h-14"
+                >
                   Bắt đầu miễn phí ngay
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 bg-transparent"
+                  className="text-lg px-8 border-white/20 text-white hover:bg-white/10 bg-transparent rounded-full h-14"
                 >
                   Xem demo
                 </Button>
@@ -607,7 +771,7 @@ export default function LandingPage() {
       </motion.section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-muted/30 scroll-mt-24">
+      <section id="contact" className="py-20 bg-white/40 scroll-mt-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center space-y-4 mb-12"
@@ -616,25 +780,51 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Badge variant="outline" className="w-fit mx-auto">Liên hệ</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">Chúng tôi có thể giúp gì?</h2>
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground text-balance">
+              Chúng tôi có thể giúp gì?
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Gửi câu hỏi, góp ý hoặc yêu cầu hỗ trợ – chúng tôi sẽ phản hồi sớm nhất.
+              Gửi câu hỏi, góp ý hoặc yêu cầu hỗ trợ – chúng tôi sẽ phản hồi sớm
+              nhất.
             </p>
           </motion.div>
 
-          <div className="max-w-2xl mx-auto">
-            <Card className="border-border">
-              <CardContent className="pt-6 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <input className="w-full rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Họ và tên" />
-                  <input className="w-full rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Email" />
+          <div className="max-w-3xl mx-auto">
+            <Card className="border-white/50 bg-white/40 backdrop-blur-md rounded-[40px] shadow-2xl overflow-hidden border">
+              <CardContent className="p-8 lg:p-12 space-y-8">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-foreground/70 ml-1">
+                      Họ và tên
+                    </label>
+                    <input
+                      className="w-full rounded-2xl border border-white/60 bg-white/30 px-5 py-4 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all backdrop-blur-sm"
+                      placeholder="Nguyễn Văn A"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-foreground/70 ml-1">
+                      Email
+                    </label>
+                    <input
+                      className="w-full rounded-2xl border border-white/60 bg-white/30 px-5 py-4 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all backdrop-blur-sm"
+                      placeholder="example@gmail.com"
+                    />
+                  </div>
                 </div>
-                <textarea className="w-full min-h-32 rounded-md border border-border bg-background px-4 py-3 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" placeholder="Nội dung" />
-                <div className="flex justify-end">
-                  <Button>
-                    Gửi
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-foreground/70 ml-1">
+                    Nội dung
+                  </label>
+                  <textarea
+                    className="w-full min-h-[160px] rounded-2xl border border-white/60 bg-white/30 px-5 py-4 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all backdrop-blur-sm"
+                    placeholder="Bạn muốn chia sẻ điều gì với chúng tôi?"
+                  />
+                </div>
+                <div className="flex justify-end pt-2">
+                  <Button className="rounded-full px-10 h-16 text-lg font-bold bg-primary hover:bg-primary/90 shadow-xl shadow-primary/20 transition-all">
+                    Gửi tin nhắn ngay
+                    <ArrowRight className="ml-2 h-6 w-6" />
                   </Button>
                 </div>
               </CardContent>
@@ -644,67 +834,124 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-muted py-16">
+      <footer className="bg-[#0a1410] pt-24 pb-12 text-white relative overflow-hidden">
+        {/* Decorative Liquid Glow in Footer */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-900/20 blur-[150px] -z-10 rounded-full" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/10 blur-[120px] -z-10 rounded-full" />
+
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-          >
-            <motion.div className="space-y-4" variants={fadeInUp}>
-              <div className="flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                  <Wallet className="h-5 w-5 text-primary-foreground" />
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-24 pb-16">
+            {/* Brand Section */}
+            <div className="lg:col-span-4 space-y-8">
+              <motion.div
+                className="flex items-center space-x-3"
+                variants={fadeInUp}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary shadow-lg shadow-primary/20">
+                  <Wallet className="h-7 w-7 text-white" />
                 </div>
-                <span className="text-xl font-bold text-foreground">TravelBudget</span>
-              </div>
-              <p className="text-muted-foreground">
-                Ứng dụng quản lý chi tiêu và lên kế hoạch du lịch thông minh cho người Việt.
-              </p>
-            </motion.div>
-
-            {[
-              {
-                title: "Sản phẩm",
-                links: ["Tính năng", "Giá cả", "Bảo mật", "API"],
-              },
-              {
-                title: "Hỗ trợ",
-                links: ["Trung tâm trợ giúp", "Liên hệ", "Hướng dẫn", "Blog"],
-              },
-              {
-                title: "Pháp lý",
-                links: ["Chính sách bảo mật", "Điều khoản sử dụng", "Cookie"],
-              },
-            ].map((section, index) => (
-              <motion.div key={section.title} className="space-y-4" variants={fadeInUp}>
-                <h3 className="font-semibold text-foreground">{section.title}</h3>
-                <ul className="space-y-2 text-muted-foreground">
-                  {section.links.map((link) => (
-                    <li key={link}>
-                      <motion.a href="#" className="hover:text-foreground transition-colors" whileHover={{ x: 5 }}>
-                        {link}
-                      </motion.a>
-                    </li>
-                  ))}
-                </ul>
+                <span className="text-3xl font-extrabold tracking-tight text-white">
+                  Plan<span className="text-primary">Go</span>
+                </span>
               </motion.div>
-            ))}
-          </motion.div>
+              <p className="text-slate-400 text-lg leading-relaxed max-w-sm">
+                Tham gia cùng hàng nghìn người dùng đã tin tưởng PlanGo để
+                quản lý chi tiêu và lên kế hoạch du lịch thông minh.
+              </p>
+              <div className="flex items-center gap-4">
+                {[Facebook, Instagram, Twitter, Github].map((Icon, i) => (
+                  <motion.a
+                    key={i}
+                    href="#"
+                    whileHover={{ y: -5, color: "#10b981" }}
+                    className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-white/10 transition-all border border-white/5"
+                  >
+                    <Icon className="h-5 w-5" />
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+
+            {/* Links Sections */}
+            <div className="lg:col-span-4 grid grid-cols-2 gap-8">
+              {[
+                {
+                  title: "Sản phẩm",
+                  links: ["Tính năng", "Giá cả", "Bảo mật", "API"],
+                },
+                {
+                  title: "Hỗ trợ",
+                  links: ["Trung tâm trợ giúp", "Liên hệ", "Hướng dẫn", "Blog"],
+                },
+              ].map((section) => (
+                <div key={section.title} className="space-y-6">
+                  <h3 className="text-lg font-bold text-white uppercase tracking-wider">
+                    {section.title}
+                  </h3>
+                  <ul className="space-y-4">
+                    {section.links.map((link) => (
+                      <li key={link}>
+                        <motion.a
+                          href="#"
+                          className="text-slate-400 hover:text-white transition-colors flex items-center group"
+                          whileHover={{ x: 5 }}
+                        >
+                          <span className="h-1.5 w-0 bg-primary mr-0 group-hover:w-3 group-hover:mr-2 transition-all rounded-full" />
+                          {link}
+                        </motion.a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            {/* Newsletter Section */}
+            <div className="lg:col-span-4 space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-white uppercase tracking-wider">
+                  Đăng ký nhận tin
+                </h3>
+                <p className="text-slate-400">
+                  Nhận các mẹo quản lý tài chính và ưu đãi mới nhất từ chúng
+                  tôi.
+                </p>
+              </div>
+              <div className="relative group">
+                <input
+                  type="email"
+                  placeholder="name@email.com"
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 pr-16 focus:outline-none focus:border-white focus:ring-1 focus:ring-white/20 transition-all backdrop-blur-sm"
+                />
+                <button className="absolute right-2 top-2 bottom-2 w-12 rounded-xl bg-primary hover:bg-primary/90 flex items-center justify-center transition-all shadow-lg shadow-primary/20">
+                  <ArrowRight className="h-5 w-5 text-white" />
+                </button>
+              </div>
+            </div>
+          </div>
 
           <motion.div
-            className="border-t border-border mt-12 pt-8 text-center text-muted-foreground"
+            className="border-t border-white/5 pt-12 text-center text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-6"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
           >
-            <p>&copy; 2024 TravelBudget. Tất cả quyền được bảo lưu.</p>
+            <p>&copy; 2026 PlanGo. Tất cả quyền được bảo lưu.</p>
+            <div className="flex items-center gap-8">
+              <a href="#" className="hover:text-white transition-colors">
+                Điều khoản
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Bảo mật
+              </a>
+            </div>
           </motion.div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
